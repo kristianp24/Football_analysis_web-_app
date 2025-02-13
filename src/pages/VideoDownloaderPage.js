@@ -35,7 +35,7 @@ const VideoDownloaderPage = () => {
 
       
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
-        <input accept="video/*" ref={filePickerRef} id="filepicker" type="file" placeholder="Enter URL" onChange={handleFileChange}/>
+        <input accept="video/*" ref={filePickerRef} id="filepicker" type="file" placeholder="Enter URL" onChange={handleFileChange} />
         </div>
 
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>

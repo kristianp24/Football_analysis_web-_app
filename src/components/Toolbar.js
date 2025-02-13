@@ -11,6 +11,8 @@ import { MenuItem } from '@mui/material';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import PasswordRoundedIcon from '@mui/icons-material/PasswordRounded';
+import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 export default function ButtonAppBar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -71,7 +73,11 @@ export default function ButtonAppBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Welcome Kristian
           </Typography>
-          <Button color="inherit">Log Out</Button>
+          <Button color='inherit'>
+                  Help
+            <HelpRoundedIcon size='small' style={{marginLeft: '5px'}}/>
+          </Button>
+          <Button color="inherit">Log Out <LogoutRoundedIcon style={{marginLeft: '5px'}} /></Button>
         </Toolbar>
       </AppBar>
     </Box>
