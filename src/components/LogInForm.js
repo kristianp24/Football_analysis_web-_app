@@ -11,8 +11,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import {useNavigate} from 'react-router-dom';
 
 const LogInForm = () => {
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -25,6 +27,10 @@ const LogInForm = () => {
   const handleMouseUpPassword = (event) => {
     event.preventDefault();
   };
+
+  const onClickLogIn = () => {
+      navigate('/VideoDownload');
+  }
 
     return (
         <Box 
@@ -84,6 +90,7 @@ const LogInForm = () => {
           variant="contained"
           color="primary"
           style={{ marginTop: '16px' }}
+          onClick={onClickLogIn}
         >
                  Log In
         </Button>            

@@ -1,5 +1,6 @@
 import LogInForm from '../components/LogInForm';
 import logo from '../icon_football.png';
+import { Button } from '@mui/material';
 
 const Home = () => {    
     return (
@@ -11,6 +12,7 @@ const Home = () => {
                   </p>
                   <div style={{display: 'flex', justifyContent: 'center'}}>
                 <LogInForm />
+          
                   </div>
                  
               </header>
