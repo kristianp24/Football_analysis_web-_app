@@ -13,10 +13,12 @@ import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded
 import PasswordRoundedIcon from '@mui/icons-material/PasswordRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import FullScreenDialog from './ProfileDialog';
 
 export default function ButtonAppBar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorEl2, setAnchorEl2] = React.useState(null); 
+    const [open, setOpen] = React.useState(false);
 
     const handleClick2 = (event) => {
         setAnchorEl2(event.currentTarget);
@@ -34,6 +36,14 @@ export default function ButtonAppBar() {
     const handleClose = () => {
         setAnchorEl(null);
       };
+    
+      const openDialog = () => {  
+        setOpen(true);
+      }
+
+      const closeDialog = () => {
+        setOpen(false);
+      }
     
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -57,7 +67,7 @@ export default function ButtonAppBar() {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose} >Profile  <AccountCircleRoundedIcon style={{marginLeft: '5px'}}/> </MenuItem>
+            <MenuItem onClick={openDialog} >Profile  <AccountCircleRoundedIcon style={{marginLeft: '5px'}}/> </MenuItem>
             <MenuItem onClick={handleClick2}>Settings <ManageAccountsRoundedIcon style={{marginLeft: '5px'}}/> </MenuItem>
             
           </Menu>
@@ -80,6 +90,8 @@ export default function ButtonAppBar() {
           <Button color="inherit">Log Out <LogoutRoundedIcon style={{marginLeft: '5px'}} /></Button>
         </Toolbar>
       </AppBar>
+      <FullScreenDialog open={open} handleClose={closeDialog}/>
+      
     </Box>
   );
 }
