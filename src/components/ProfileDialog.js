@@ -12,7 +12,8 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import SaveIcon from '@mui/icons-material/Save';
-import { ListItem, OutlinedInput } from '@mui/material';
+import { Box, ListItem, OutlinedInput } from '@mui/material';
+import {TextField} from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -59,26 +60,11 @@ export default function FullScreenDialog({open,handleClose}) {
             </Button>
           </Toolbar>
         </AppBar>
-        <List>
-          <ListItem>
-            <ListItemText id='nameTxt' primary="First Name" secondary="Tethys" contentEditable='true' />
-           
-             
-          </ListItem>
-          <Divider />
-            <ListItem>
-                <ListItemText /**/sx={{ flexDirection: 'column', alignItems: 'flex-start' }} primary="Last Name" />
-                <Typography 
-                    id='surnameTxt' 
-                    contentEditable='true' 
-                    // sx={{ display: 'block' }} 
-                >
-                    Tethys
-                </Typography>
-               
-                </ListItem>
-          <Divider />
-        </List>
+        <Box sx={{ m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column'}}>
+          <Typography variant='h6' >Name: Kristian </Typography>
+          <Typography variant='h6' >Email: Kristian@gmail.com </Typography>
+          
+          </Box>
       </Dialog>
     </React.Fragment>
   );

@@ -12,6 +12,7 @@ import { Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import {useNavigate} from 'react-router-dom';
+import RegisterForm from "./RegisterForm";
 
 const LogInForm = () => {
   const navigate = useNavigate();
@@ -120,7 +121,7 @@ const LogInForm = () => {
                     component="button"
                     variant="body2"
                     onClick={() => {
-                        console.info("I'm a button.");
+                         navigate('/Register');
                     }}
                     style={{ cursor: 'pointer', marginLeft: '4px', marginBottom: '3px' }}    
                     >
