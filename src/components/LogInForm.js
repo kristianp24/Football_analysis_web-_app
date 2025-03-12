@@ -13,9 +13,13 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import {useNavigate} from 'react-router-dom';
 import RegisterForm from "./RegisterForm";
+import axios from 'axios';
 
 const LogInForm = () => {
   const navigate = useNavigate();
+  
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -30,7 +34,29 @@ const LogInForm = () => {
   };
 
   const onClickLogIn = () => {
-      navigate('/VideoDownload');
+      //navigate('/VideoDownload');
+     const email = document.getElementById('email').value;
+     const password = document.getElementById('outlined-adornment-password').value;
+     setEmail(email);
+     setPassword(password);
+     sendData();
+  }
+
+
+  const sendData = async (e) => {
+    e.preventDefault();
+    try{
+       const response = await axios.post('http://127.0.0.1:5000/login', {
+        email: document.getElementById('email').value,
+        password: document.getElementById('outlined-adornment-password').value
+    });
+    console.log(response);
+    }
+    catch (error) {
+      console.log(error);
+    }
+   
+
   }
 
     return (
@@ -91,7 +117,7 @@ const LogInForm = () => {
           variant="contained"
           color="primary"
           style={{ marginTop: '16px' }}
-          onClick={onClickLogIn}
+          onClick={sendData}
         >
                  Log In
         </Button>            
