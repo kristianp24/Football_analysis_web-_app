@@ -8,7 +8,7 @@ class User(Base):
     full_name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     hashed_password = Column(String(200), nullable=False)
-    token = Column(String(200))  
+    token = Column(String(600))  
     token_expiration = Column(DateTime)  
     created_at = Column(DateTime, default=datetime.datetime.now)  # Automatically set creation time
     updated_at = Column(DateTime, onupdate=datetime.datetime.now) 

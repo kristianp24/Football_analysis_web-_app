@@ -14,10 +14,12 @@ import Link from "@mui/material/Link";
 import {useNavigate} from 'react-router-dom';
 import RegisterForm from "./RegisterForm";
 import axios from 'axios';
-
+import AlertComponent from "./Alert";
+import useAlertSetter from "../hooks/useAlertSetter";
 const LogInForm = () => {
   const navigate = useNavigate();
-  
+  const { alert, showAlert } = useAlertSetter();
+
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -46,14 +48,21 @@ const LogInForm = () => {
   const sendData = async (e) => {
     e.preventDefault();
     try{
-       const response = await axios.post('http://127.0.0.1:5000/login', {
+       const response = await axios.post('http://127.0.0.1:5000/auth/login', {
         email: document.getElementById('email').value,
         password: document.getElementById('outlined-adornment-password').value
     });
     console.log(response);
+    localStorage.setItem('token', response['data']['token']);
+    navigate('/VideoDownload');
     }
     catch (error) {
-      console.log(error);
+      if (error.response.status === 401) {
+        showAlert('error', 'Invalid email or password');
+      }
+      else if (error.response.status === 500) {
+        showAlert('error', 'Server error');
+      }
     }
    
 
@@ -68,6 +77,17 @@ const LogInForm = () => {
         
            >
             <div>
+            {alert.visible && 
+                    <AlertComponent 
+                        severity={alert.severity} 
+                        message={alert.message} 
+                        style={{ width: '100%', boxSizing: 'border-box' }} 
+                    />
+                }
+
+            </div>
+            <div>
+            
                 <TextField
                     required
                     id="email"

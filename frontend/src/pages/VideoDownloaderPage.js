@@ -1,17 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ButtonAppBar from "../components/Toolbar";
 import backgroundImage from "../media/poza2.jpeg";
 import Button from "@mui/material/Button";
+import check_token_expiration from "../util_functions/token_expiration_checker";
+import { useNavigate } from "react-router-dom";
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
      const filePickerRef = useRef(null);
      const videoRef = useRef(null);
+     const token = localStorage.getItem('token');
+     const navigate = useNavigate();
+     useEffect(() => {
+        const checkAndRedirect = async  () => {    
+            const isExpired = await check_token_expiration();
+            if (isExpired){
+                localStorage.removeItem('token');
+                navigate('/');
+            }
+        }
+
+        checkAndRedirect();
+
+       const intervalId = setInterval(checkAndRedirect, 900000);
+       return () => clearInterval(intervalId);
+        
+     }
+        ,[]);
+    
+    
+     
 
      const handleFileChange = (e) => {  
-        // console.log(filePickerRef.current.value);
-        // console.log(filePickerRef.current.files);
         const file = filePickerRef.current.files[0];
         const reader = new FileReader();
         
@@ -19,8 +40,8 @@ const VideoDownloaderPage = () => {
             const videoSrc = reader.result;
             console.log(videoSrc);
       
-            setUrl(videoSrc); // Store URL in state
-            videoRef.current.src = videoSrc; // Directly set video source
+            setUrl(videoSrc); 
+            videoRef.current.src = videoSrc; 
             videoRef.current.load(); 
         })
 

@@ -4,6 +4,7 @@ import RegisterForm from "../components/RegisterForm";
 import AlertComponent from "../components/Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
 import Button from "@mui/material/Button";
+import axios from "axios";
 
 
 const Register = () => {
@@ -20,6 +21,8 @@ const Register = () => {
         const confirmPassword = confirmPasswordInput.value;
         const name = nameInput.value;
         const surname = surnameInput.value;
+
+        
 
         if (Utils.checkEmptyField(name) === false) {
            showAlert("error", "Name is required");
@@ -68,8 +71,31 @@ const Register = () => {
             
         }
        
-        else {
-            showAlert("success", "Registration successful");
+       else{
+        registerData(email, password, name, surname);
+       }
+    }
+
+    const registerData = async (email, password, name, surname) => {
+        try{
+            const response = await axios.post('http://127.0.0.1:5000/auth/register',{
+                email: email,
+                password: password,
+                full_name: name + " " + surname,
+            })
+        
+            if (response.status === 201) {
+                showAlert("success", "Registration successful go back to login");
+            }
+        }
+        catch (error) {
+            console.log(error);
+            if (error.response.status === 409) {
+                showAlert("error", "User with this email already exists");
+            }
+           else if (error.response.status === 500) {
+                showAlert("error", "Server Error");
+            }
         }
     }
 
