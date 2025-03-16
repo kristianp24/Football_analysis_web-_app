@@ -21,10 +21,10 @@ def add_video():
     if file and allowed_file(file.filename):
         file.save(os.path.join(VIDEO_PATH, file.filename))
         video_name = file.filename
-        return jsonify({"message":"Video added with success!!"}), 201
+        return jsonify({"message":"Video added with success!!"}), 200
 
 @video_bp.route('/predictVideo', methods=['GET'])
-def get_videos():
+def get_video():
     video = os.listdir(VIDEO_PATH)
     from prediction import predict
     print('Starting prediction')

@@ -28,10 +28,10 @@ export default function ButtonAppBar() {
           const token = localStorage.getItem('token');
           const response = await axios.post(
             'http://127.0.0.1:5000/auth/logout', 
-            {},  // No body needed
+            {}, 
             {
                 headers: {
-                    Authorization: `Bearer ${token}` // Add Authorization header
+                    Authorization: `Bearer ${token}` 
                 }
             }
         );

@@ -5,7 +5,7 @@ import AlertComponent from "../components/Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
 import Button from "@mui/material/Button";
 import axios from "axios";
-
+import addUser from "../requests/register_request";
 
 const Register = () => {
     const { alert, showAlert } = useAlertSetter();
@@ -77,26 +77,16 @@ const Register = () => {
     }
 
     const registerData = async (email, password, name, surname) => {
-        try{
-            const response = await axios.post('http://127.0.0.1:5000/auth/register',{
-                email: email,
-                password: password,
-                full_name: name + " " + surname,
-            })
         
-            if (response.status === 201) {
-                showAlert("success", "Registration successful go back to login");
-            }
+        const response = await addUser(email, password, name, surname);
+        
+        if (response.status === 201) {
+            showAlert("success", "Registration successful go back to login");
         }
-        catch (error) {
-            console.log(error);
-            if (error.response.status === 409) {
-                showAlert("error", "User with this email already exists");
-            }
-           else if (error.response.status === 500) {
-                showAlert("error", "Server Error");
-            }
-        }
+        else if (response.status === 409 || response.status === 500) {
+            showAlert("error", response['response']['data']['error']);
+         }
+    
     }
 
     return (

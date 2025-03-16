@@ -20,7 +20,7 @@ def add_user():
         session = create_engine_and_sessions()
         user = session.query(User).filter_by(email=data['email']).first()
         if user:
-            return jsonify({"error": "User already exists"}), 409
+            return jsonify({"error": "User already exists!"}), 409
         session.add(new_user)
         session.commit()
 
@@ -38,8 +38,10 @@ def fetch_user():
     try:
         session = create_engine_and_sessions()
         user = session.query(User).filter_by(email=data['email']).first()
-       
-        if user.token:
+        if not user:
+            return jsonify({"error": "Invalid email"}), 401
+        
+        if user and user.token:
             return jsonify({"error": "User already logged in"}), 409
        
         if user and bcrypt.checkpw(data['password'].encode('utf-8'),  user.hashed_password.encode('utf-8')):        
@@ -51,7 +53,7 @@ def fetch_user():
             session.commit()
             return jsonify({"token": access_token}), 200
         else:
-            return jsonify({"error": "Invalid email or password"}), 401
+            return jsonify({"error": "Invalid password"}), 401
 
     except Exception as e:
         

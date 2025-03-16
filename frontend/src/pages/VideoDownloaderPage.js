@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import AlertComponent from "../components/Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
 import axios from "axios";
+import saveVideo from "../requests/saveVideoRequest";
+import predictVideo from "../requests/predictVideoRequest";
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
@@ -72,20 +74,12 @@ const VideoDownloaderPage = () => {
         formData.append("video", selectedFile);
         // console.log(selectedFile);
         try {
-            const response = await axios.post(
-                'http://127.0.0.1:5000/saveVideo',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            );
+            const response = await saveVideo(formData)
             console.log(response);
-            if (response.status === 201) {
+            if (response.status === 200) {
                 showAlert('success', 'Video saved successfully! Wait for the prediction!');
                 try{
-                    const prediction = await axios.get('http://127.0.0.1:5000/predictVideo');
+                    const prediction = await predictVideo();
                     console.log(prediction);
                     if (prediction.status === 200) {
                         showAlert('success', 'Prediction completed successfully!');
@@ -95,9 +89,7 @@ const VideoDownloaderPage = () => {
                     console.log('Error in prediction');
                     console.log(error);
                 }
-                
-                
-            }
+             }
          }
          catch (error) {
              console.log(error);

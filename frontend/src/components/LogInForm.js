@@ -12,7 +12,7 @@ import { Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import {useNavigate} from 'react-router-dom';
-import RegisterForm from "./RegisterForm";
+import loginUser from "../requests/loginRequest";
 import axios from 'axios';
 import AlertComponent from "./Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
@@ -20,9 +20,6 @@ import useAlertSetter from "../hooks/useAlertSetter";
 const LogInForm = () => {
   const navigate = useNavigate();
   const { alert, showAlert } = useAlertSetter();
-
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -36,41 +33,22 @@ const LogInForm = () => {
     event.preventDefault();
   };
 
-  const onClickLogIn = () => {
-      //navigate('/VideoDownload');
-     const email = document.getElementById('email').value;
-     const password = document.getElementById('outlined-adornment-password').value;
-     setEmail(email);
-     setPassword(password);
-     sendData();
-  }
-
-
   const sendData = async (e) => {
-    e.preventDefault();
-    try{
-       const response = await axios.post('http://127.0.0.1:5000/auth/login', {
-        email: document.getElementById('email').value,
-        password: document.getElementById('outlined-adornment-password').value
-    });
-    console.log(response);
-    localStorage.setItem('token', response['data']['token']);
-    navigate('/VideoDownload');
-    }
-    catch (error) {
-      if (error.response.status === 401) {
-        showAlert('error', 'Invalid email or password');
-      }
-      if (error.response.status === 409) {
-        showAlert('error', 'You are already logged in!');
-      }
-      else if (error.response.status === 500) {
-        showAlert('error', 'Server error');
-      }
-    }
-   
-
-  }
+      e.preventDefault();
+      
+      const email =  document.getElementById('email').value;
+      const password = document.getElementById('outlined-adornment-password').value;
+      const response = await loginUser(email, password);
+      console.log(response);
+          if (response.status === 200) {
+            localStorage.setItem('token', response['data']['token']);
+            navigate('/VideoDownload');
+          }
+          else if (response.status === 401 || response.status === 409 || response.status === 500) {
+            showAlert('error', response['response']['data']['error']);
+          }
+    
+ }
 
     return (
         <Box 
@@ -102,31 +80,22 @@ const LogInForm = () => {
                     size="medium"/>
                 </div>
                 <div>
-                {/* <TextField
-                    required
-                    id="password"
-                    label="Parola"
-                    defaultValue=""
-                    variant="outlined"
-                    type="password"
-                    size="small"
-                    /> */}
                     <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password" required>Password</InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={
-                    showPassword ? 'hide the password' : 'display the password'
-                  }
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  onMouseUp={handleMouseUpPassword}
-                  edge="end"
-                >
+                    <InputLabel htmlFor="outlined-adornment-password" required>Password</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password"
+                      type={showPassword ? 'text' : 'password'}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label={
+                              showPassword ? 'hide the password' : 'display the password'
+                            }
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            onMouseUp={handleMouseUpPassword}
+                            edge="end"
+                          >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
