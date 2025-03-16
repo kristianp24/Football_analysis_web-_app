@@ -16,6 +16,7 @@ import RegisterForm from "./RegisterForm";
 import axios from 'axios';
 import AlertComponent from "./Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
+
 const LogInForm = () => {
   const navigate = useNavigate();
   const { alert, showAlert } = useAlertSetter();
@@ -59,6 +60,9 @@ const LogInForm = () => {
     catch (error) {
       if (error.response.status === 401) {
         showAlert('error', 'Invalid email or password');
+      }
+      if (error.response.status === 409) {
+        showAlert('error', 'You are already logged in!');
       }
       else if (error.response.status === 500) {
         showAlert('error', 'Server error');

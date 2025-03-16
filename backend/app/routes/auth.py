@@ -38,17 +38,16 @@ def fetch_user():
     try:
         session = create_engine_and_sessions()
         user = session.query(User).filter_by(email=data['email']).first()
-        if not user:
-            return jsonify({"error": "Invalid email or password"}), 404
+       
         if user.token:
-            return jsonify({"error": "User already logged in"}), 401
+            return jsonify({"error": "User already logged in"}), 409
        
         if user and bcrypt.checkpw(data['password'].encode('utf-8'),  user.hashed_password.encode('utf-8')):        
             timezone = pytz.timezone('Europe/Bucharest')
             now_utc = datetime.datetime.now(timezone)
-            access_token = create_access_token(identity=user.email)
+            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=50))
             user.token = access_token
-            user.token_expiration = now_utc + datetime.timedelta(hours=1)
+            user.token_expiration = now_utc + datetime.timedelta(minutes=50)
             session.commit()
             return jsonify({"token": access_token}), 200
         else:
@@ -60,23 +59,27 @@ def fetch_user():
     finally:
         session.close()
 
-@auth_bp.route('/protected', methods=['GET'])
+@auth_bp.route('/logout', methods=['POST'])
 @jwt_required()
-def protected():
+def logout():
     try:
+        print("Request received at /logout")
         current_user = get_jwt_identity()
         session = create_engine_and_sessions()
         user = session.query(User).filter_by(email=current_user).first()
-        if not user.token:
-            session.close()
-            return jsonify({"error": "User is not logged in"}), 401
-        if user.token_expiration < datetime.datetime.now():
-            session.close()
-            return jsonify({"error": "Token expired"}), 404
+        user.token = None
+        user.token_expiration = None
+        session.commit()
+        return jsonify({"message": "User logged out"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 501
     finally:
         session.close()
-        return jsonify(logged_in_as=current_user), 200
+
+@auth_bp.route('/videoDownload', methods=['GET'])
+@jwt_required()
+def videoDownload():
+    return jsonify({"message": "Token still valid"}), 200
        
+
 

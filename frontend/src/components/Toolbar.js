@@ -14,11 +14,35 @@ import PasswordRoundedIcon from '@mui/icons-material/PasswordRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import FullScreenDialog from './ProfileDialog';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function ButtonAppBar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorEl2, setAnchorEl2] = React.useState(null); 
     const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
+
+    const handleLogOut = async () => {
+        try{
+          const token = localStorage.getItem('token');
+          const response = await axios.post(
+            'http://127.0.0.1:5000/auth/logout', 
+            {},  // No body needed
+            {
+                headers: {
+                    Authorization: `Bearer ${token}` // Add Authorization header
+                }
+            }
+        );
+        localStorage.removeItem('token');
+        navigate('/')
+        }
+        catch (error) {
+          console.log(error);
+          
+        }
+    }
 
     const handleClick2 = (event) => {
         setAnchorEl2(event.currentTarget);
@@ -87,7 +111,7 @@ export default function ButtonAppBar() {
                   Help
             <HelpRoundedIcon size='small' style={{marginLeft: '5px'}}/>
           </Button>
-          <Button color="inherit">Log Out <LogoutRoundedIcon style={{marginLeft: '5px'}} /></Button>
+          <Button color="inherit" onClick={handleLogOut}>Log Out <LogoutRoundedIcon style={{marginLeft: '5px'}} /></Button>
         </Toolbar>
       </AppBar>
       <FullScreenDialog open={open} handleClose={closeDialog}/>

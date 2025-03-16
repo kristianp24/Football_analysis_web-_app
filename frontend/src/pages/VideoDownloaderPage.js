@@ -3,37 +3,56 @@ import { Box, Typography } from "@mui/material";
 import ButtonAppBar from "../components/Toolbar";
 import backgroundImage from "../media/poza2.jpeg";
 import Button from "@mui/material/Button";
-import check_token_expiration from "../util_functions/token_expiration_checker";
-import { useNavigate } from "react-router-dom";
+import AlertComponent from "../components/Alert";
+import useAlertSetter from "../hooks/useAlertSetter";
+import axios from "axios";
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
+     const [selectedFile, setSelectedFile] = useState(null);
      const filePickerRef = useRef(null);
      const videoRef = useRef(null);
-     const token = localStorage.getItem('token');
-     const navigate = useNavigate();
-     useEffect(() => {
-        const checkAndRedirect = async  () => {    
-            const isExpired = await check_token_expiration();
-            if (isExpired){
-                localStorage.removeItem('token');
-                navigate('/');
-            }
-        }
+     const { alert, showAlert } = useAlertSetter();
+     
+    //  useEffect(() => {
+    //     const checkAndRedirect = async  () => {    
+    //         const isExpired = await check_token_expiration();
+    //         if (isExpired){
+    //             localStorage.removeItem('token');
+    //             try{
+    //                 const response = await axios.post(
+    //                 'http://127.0.0.1:5000/auth/logout', 
+    //                 {},  
+    //                 {
+    //                     headers: {
+    //                         Authorization: `Bearer ${tokenRef.current}` 
+    //                     }
+    //                 }
+    //                );
+    //                navigate('/');
+    //             }
+    //             catch (error) {
+    //                 console.log(error);
+    //             }
+                
+                
+    //         }
+    //     }
 
-        checkAndRedirect();
+    //     checkAndRedirect();
 
-       const intervalId = setInterval(checkAndRedirect, 900000);
-       return () => clearInterval(intervalId);
+    //    const intervalId = setInterval(checkAndRedirect, 120000);
+    //    return () => clearInterval(intervalId);
         
-     }
-        ,[]);
+    //  }
+    //     ,[navigate]);
     
     
      
 
      const handleFileChange = (e) => {  
         const file = filePickerRef.current.files[0];
+        setSelectedFile(file);
         const reader = new FileReader();
         
         reader.addEventListener("load", () => { 
@@ -48,16 +67,66 @@ const VideoDownloaderPage = () => {
         reader.readAsDataURL(file);
      }
 
-     
+     const handleSaveVideo = async () => {
+        const formData = new FormData();
+        formData.append("video", selectedFile);
+        // console.log(selectedFile);
+        try {
+            const response = await axios.post(
+                'http://127.0.0.1:5000/saveVideo',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+            console.log(response);
+            if (response.status === 201) {
+                showAlert('success', 'Video saved successfully! Wait for the prediction!');
+                try{
+                    const prediction = await axios.get('http://127.0.0.1:5000/predictVideo');
+                    console.log(prediction);
+                    if (prediction.status === 200) {
+                        showAlert('success', 'Prediction completed successfully!');
+                    }
+                }
+                catch (error) {
+                    console.log('Error in prediction');
+                    console.log(error);
+                }
+                
+                
+            }
+         }
+         catch (error) {
+             console.log(error);
+         }
+    }
+
 
 
     return (
-        <div style={{backgroundImage: `url(${backgroundImage})`, height: '100vh',  backgroundSize: 'cover',
+        <div id="videoDownloadPage" style={{backgroundImage: `url(${backgroundImage})`,  backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            height: '100vh'}}>
+            backgroundAttachment: 'fixed',
+             minHeight: '100vh',  
+             width: '100%',
+           }}>
 
         <ButtonAppBar />
+
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
+            {alert.visible && 
+                                <AlertComponent 
+                                    severity={alert.severity} 
+                                    message={alert.message} 
+                                    style={{ width: '100%', boxSizing: 'border-box' }} 
+                                />
+                            }
+            
+            </div>
 
       
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
@@ -86,7 +155,16 @@ const VideoDownloaderPage = () => {
             </div>
         </Box>
         </div>
+
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
+       
+            <Button onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px'}} variant="contained" title="Download Video">
+                Predict Video
+            </Button>
+       
         </div>
+
+    </div>
     );
 
 }
