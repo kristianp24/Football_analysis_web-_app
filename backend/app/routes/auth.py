@@ -74,7 +74,7 @@ def logout():
         session.commit()
         return jsonify({"message": "User logged out"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 501
+        return jsonify({"error": 'Server Error!'}), 501
     finally:
         session.close()
 

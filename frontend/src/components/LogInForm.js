@@ -40,8 +40,11 @@ const LogInForm = () => {
       const password = document.getElementById('outlined-adornment-password').value;
       const response = await loginUser(email, password);
       console.log(response);
-          if (response.status === 200) {
-            localStorage.setItem('token', response['data']['token']);
+          if (response.status === 200 && response.data.token) {
+            console.log(response['data']['token'])
+            const token = response['data']['token']
+            localStorage.setItem("token", token);
+            localStorage.setItem("sth","prove")
             navigate('/VideoDownload');
           }
           else if (response.status === 401 || response.status === 409 || response.status === 500) {

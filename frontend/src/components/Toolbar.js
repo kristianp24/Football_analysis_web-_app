@@ -14,34 +14,45 @@ import PasswordRoundedIcon from '@mui/icons-material/PasswordRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import FullScreenDialog from './ProfileDialog';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import logout from '../requests/logoutRequest';
+import getFullName from '../requests/getFullNameRequest';
 
 export default function ButtonAppBar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorEl2, setAnchorEl2] = React.useState(null); 
     const [open, setOpen] = React.useState(false);
+    const [name, setName] = React.useState(null);
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+      loadName();
+  }, []);
+
+    const loadName = async () => {
+      const full_name = await getFullName()
+          console.log(full_name)
+          if (full_name !== null)
+          {
+            
+            setName(String(full_name));
+          }
+          else{
+            setName("No name found!")
+          }
+    }
+
+
     const handleLogOut = async () => {
-        try{
           const token = localStorage.getItem('token');
-          const response = await axios.post(
-            'http://127.0.0.1:5000/auth/logout', 
-            {}, 
-            {
-                headers: {
-                    Authorization: `Bearer ${token}` 
-                }
-            }
-        );
-        localStorage.removeItem('token');
-        navigate('/')
-        }
-        catch (error) {
-          console.log(error);
-          
-        }
+          const response = await logout(token);
+          if (response.status === 200){
+            localStorage.removeItem('token');
+            navigate('/')
+          }
+          else if (response.status === 500){
+             console.log(response['response']['data']['error']);
+          }
     }
 
     const handleClick2 = (event) => {
@@ -81,6 +92,7 @@ export default function ButtonAppBar() {
             sx={{ mr: 2 }}
             id='menu-icon'
             onClick={handleClick}
+            
           >
             <MenuIcon />
           </IconButton>
@@ -105,7 +117,7 @@ export default function ButtonAppBar() {
           </Menu>
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome Kristian
+            Welcome {name}
           </Typography>
           <Button color='inherit'>
                   Help
