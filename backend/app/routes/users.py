@@ -37,3 +37,14 @@ def get_user_full_name():
         return jsonify({'error': 'Error occured!'}), 500
     finally:
         session.close()
+
+@users_bp.route('/user/email', methods=['GET'])
+@jwt_required()
+def get_user_email():
+    try:
+        email = get_jwt_identity()
+        print(email, type(email))
+        return jsonify({"email": email}), 200
+    except Exception as e:
+        return jsonify({"error": "Some error occured"}), 500
+    

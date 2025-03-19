@@ -14,22 +14,45 @@ import Slide from '@mui/material/Slide';
 import SaveIcon from '@mui/icons-material/Save';
 import { Box, ListItem, OutlinedInput } from '@mui/material';
 import {TextField} from '@mui/material';
+import getFullName from '../requests/getFullNameRequest';
+import getEmail from '../requests/getUserEmail';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function FullScreenDialog({open,handleClose}) {
-//   const [open, setOpen] = React.useState(false);
-//   setOpen(openDialog);
+  const [name, setName] = React.useState(null);
+  const [email, setEmail] = React.useState(null);
+   
+  React.useEffect(() => {
+    getName();
+    getUserEmail();
+  }, [])
 
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   };
 
-//   const handleClose = () => {
-//     setOpen(false);
-//   };
+  const getUserEmail = () => {
+      const email =  getEmail();
+      console.log(email)
+      if (email !== null){
+        setEmail(email)
+      }
+      else{
+        setName('No item found!')
+      }
+  }
+
+  const getName = async () => {
+    const fullName = await getFullName();
+    if (fullName !== null){
+      setName(fullName)
+    }
+    else{
+      setName("Not found!")
+    }
+    
+  }
+
 
   return (
     <React.Fragment>
@@ -41,6 +64,7 @@ export default function FullScreenDialog({open,handleClose}) {
         open={open}
         onClose={handleClose}
         TransitionComponent={Transition}
+    
       >
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
@@ -56,15 +80,30 @@ export default function FullScreenDialog({open,handleClose}) {
               Profile
             </Typography>
             <Button autoFocus color="inherit" onClick={handleClose}>
-              save
+              Save
             </Button>
           </Toolbar>
         </AppBar>
-        <Box sx={{ m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column'}}>
-          <Typography variant='h6' >Name: Kristian </Typography>
-          <Typography variant='h6' >Email: Kristian@gmail.com </Typography>
-          
+        <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'flex-start',
+                pt: 2, 
+                justifyContent: 'center', 
+                height: '100vh' // Ensures full screen height
+              }}
+        >
+          <Box sx={{ width: '300px', height: '100px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD', 
+                     border: "2px solid black", borderRadius: "10px"
+          }}>
+            <Typography variant='h6' >Name: {name} </Typography>
+            <Typography variant='h6' >Email: {email}</Typography>
+            
+            </Box>
           </Box>
+          <div>
+            
+          </div>
       </Dialog>
     </React.Fragment>
   );
