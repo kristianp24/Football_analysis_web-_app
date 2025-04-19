@@ -9,10 +9,14 @@ function useAlertSetter() {
 
     const showAlert = (severity, message) => {
         setAlert({ visible: true, severity: severity, message: message });
+        hideAlert();
     };
 
     const hideAlert = () => {
-        setAlert({ visible: false, severity: "", message: "" });
+        setTimeout(() => {
+            setAlert({ visible: false, severity: "", message: "" });
+
+          }, 3000);
     };
 
     return { alert, showAlert, hideAlert };

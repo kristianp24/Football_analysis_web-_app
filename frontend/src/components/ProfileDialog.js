@@ -21,14 +21,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({open,handleClose}) {
+export default function FullScreenDialog({open,handleClose, predictionData}) {
   const [name, setName] = React.useState(null);
   const [email, setEmail] = React.useState(null);
+  const [data, setData] = React.useState(null);
    
   React.useEffect(() => {
     getName();
     getUserEmail();
-  }, [])
+    const prediction = JSON.parse(sessionStorage.getItem('prediction'));
+    setData(prediction);
+  }, [open])
 
 
   const getUserEmail = () => {
@@ -79,31 +82,39 @@ export default function FullScreenDialog({open,handleClose}) {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Profile
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
-              Save
-            </Button>
+           
           </Toolbar>
         </AppBar>
         <Box 
               sx={{ 
                 display: 'flex', 
-                alignItems: 'flex-start',
-                pt: 2, 
+                alignItems: 'center',
                 justifyContent: 'center', 
-                height: '100vh' // Ensures full screen height
+                pt: 2, 
+                mt: -12,
+                flexDirection: 'column',
+                justifyContent: 'center', 
+                height: '100vh',
+                gap: 2,
               }}
         >
           <Box sx={{ width: '300px', height: '100px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD', 
-                     border: "2px solid black", borderRadius: "10px"
+                     border: "2px solid black", borderRadius: "10px", 
           }}>
             <Typography variant='h6' >Name: {name} </Typography>
             <Typography variant='h6' >Email: {email}</Typography>
-            
-            </Box>
+           
+         
           </Box>
-          <div>
-            
-          </div>
+
+          <Box sx={{ width: '600px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
+                      border: "2px solid black", borderRadius: "10px", 
+            }}>
+                {JSON.stringify(data, null, 2)}
+          </Box>
+         
+         </Box>
+
       </Dialog>
     </React.Fragment>
   );

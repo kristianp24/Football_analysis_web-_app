@@ -59,30 +59,25 @@ class BallController:
             player_width = x2_player - x1_player
             player_height = y2_player - y1_player
 
-            # 1️⃣ Check if the bounding boxes overlap
             if not (x2_ball < x1_player or x1_ball > x2_player or
                     y2_ball < y1_player or y1_ball > y2_player):
 
-                # 2️⃣ Aspect Ratio Check (Ball should be almost square)
                 aspect_ratio = max(ball_width, ball_height) / min(ball_width, ball_height)
-                if aspect_ratio > 1.5:  # Elongated shape means it's likely a foot
+                if aspect_ratio > 1.5: 
                     print(f"Rejected ball {ball_bbox} (Bad aspect ratio: {aspect_ratio}) -> Likely a foot")
                     return True
-
-                # 3️⃣ Check if the "ball" is near the player's lower edges (feet region)
-                foot_threshold = y2_player - (player_height * 0.2)  # Bottom 20% of player bbox
+                foot_threshold = y2_player - (player_height * 0.2)  
                 if y1_ball > foot_threshold:
                     print(f"Rejected ball {ball_bbox} (Too low in Player {player['bbox']}) -> Likely a foot")
                     return True
 
-                # 4️⃣ Check if the "ball" extends significantly outside the player's bbox (Legs do this)
-                outside_x_left = x1_ball < x1_player - (player_width * 0.05)  # Ball extends too much to the left
-                outside_x_right = x2_ball > x2_player + (player_width * 0.05)  # Ball extends too much to the right
+                outside_x_left = x1_ball < x1_player - (player_width * 0.05)  
+                outside_x_right = x2_ball > x2_player + (player_width * 0.05)  
                 if outside_x_left or outside_x_right:
                     print(f"Rejected ball {ball_bbox} (Partially outside Player {player['bbox']}) -> Likely a foot")
                     return True
 
-        return False  # If it passes all checks, it's a real ball
+        return False 
 
     def get_valid_ball_bboxes(self, no_frames, tracked_data):
         valid_bboxes = []

@@ -28,9 +28,9 @@ def get_video():
     video = os.listdir(VIDEO_PATH)
     from prediction import predict
     print('Starting prediction')
-    is_predicted = predict(VIDEO_PATH, video_name)
+    is_predicted, data = predict(VIDEO_PATH, video_name)
     if is_predicted:
-        return jsonify({"message":"Video predicted with success!!"}), 201
+        return jsonify({"message":"Video predicted with success!!", "data": data}), 200
     else:
         return jsonify({"error": "Error in prediction"}), 500
     

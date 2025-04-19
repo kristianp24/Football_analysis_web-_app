@@ -48,6 +48,9 @@ export default function ButtonAppBar() {
           const response = await logout(token);
           if (response.status === 200){
             localStorage.removeItem('token');
+            if (sessionStorage.getItem('prediction') !== null){
+            sessionStorage.removeItem('prediction');
+            }
             navigate('/')
           }
           else if (response.status === 500){
@@ -72,13 +75,6 @@ export default function ButtonAppBar() {
         setAnchorEl(null);
       };
     
-      const openDialog = () => {  
-        setOpen(true);
-      }
-
-      const closeDialog = () => {
-        setOpen(false);
-      }
     
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -103,7 +99,6 @@ export default function ButtonAppBar() {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={openDialog} >Profile  <AccountCircleRoundedIcon style={{marginLeft: '5px'}}/> </MenuItem>
             <MenuItem onClick={handleClick2}>Settings <ManageAccountsRoundedIcon style={{marginLeft: '5px'}}/> </MenuItem>
             
           </Menu>
@@ -126,8 +121,7 @@ export default function ButtonAppBar() {
           <Button color="inherit" onClick={handleLogOut}>Log Out <LogoutRoundedIcon style={{marginLeft: '5px'}} /></Button>
         </Toolbar>
       </AppBar>
-      <FullScreenDialog open={open} handleClose={closeDialog}/>
-      
+     
     </Box>
   );
 }

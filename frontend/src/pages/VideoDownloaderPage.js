@@ -8,6 +8,9 @@ import useAlertSetter from "../hooks/useAlertSetter";
 import axios from "axios";
 import saveVideo from "../requests/saveVideoRequest";
 import predictVideo from "../requests/predictVideoRequest";
+import FormDialog from "../components/StatisticsDialog";
+import FullScreenDialog from "../components/ProfileDialog";
+
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
@@ -15,6 +18,8 @@ const VideoDownloaderPage = () => {
      const filePickerRef = useRef(null);
      const videoRef = useRef(null);
      const { alert, showAlert } = useAlertSetter();
+     const [open, setOpen] = useState(false);
+     const [openTeamForm, setOpenTeamForm] = useState(false)
      
     //  useEffect(() => {
     //     const checkAndRedirect = async  () => {    
@@ -50,7 +55,13 @@ const VideoDownloaderPage = () => {
     //     ,[navigate]);
     
     
-     
+    const closeDialog = () => {
+        setOpen(false);
+    }
+    // const openDialog = () => {
+    //     setOpen(true);
+    // }
+
 
      const handleFileChange = (e) => {  
         const file = filePickerRef.current.files[0];
@@ -82,7 +93,10 @@ const VideoDownloaderPage = () => {
                     const prediction = await predictVideo();
                     console.log(prediction);
                     if (prediction.status === 200) {
-                        showAlert('success', 'Prediction completed successfully!');
+                        showAlert('success', 'Prediction completed successfully!'); 
+                        sessionStorage.setItem('prediction', JSON.stringify(prediction.data.data));
+                        console.log(prediction.data.data);
+                       
                     }
                 }
                 catch (error) {
@@ -94,6 +108,19 @@ const VideoDownloaderPage = () => {
          catch (error) {
              console.log(error);
          }
+    }
+
+    const handleStatistics = () => {
+        
+        if (sessionStorage.getItem('prediction') == null) {
+            showAlert('warning', 'Please upload a video and wait for the prediction!');     
+            return;
+        }
+        const prediction = sessionStorage.getItem('prediction');
+        setOpenTeamForm(true);
+        // openDialog();
+        
+
     }
 
 
@@ -150,12 +177,18 @@ const VideoDownloaderPage = () => {
 
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
        
-            <Button onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px'}} variant="contained" title="Download Video">
+            <Button onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px', marginRight: '5px'}} variant="contained" title="Download Video">
                 Predict Video
+            </Button>
+
+            <Button onClick={handleStatistics} style={{color: 'white', marginTop: '10px', marginLeft: '5px'}} variant="contained" title= "View statistics" >
+                View Statistics
             </Button>
        
         </div>
-
+          
+          <FormDialog openForm={openTeamForm}  onClose={() => setOpenTeamForm(false)} openDialog={() => setOpen(true)}/>
+            <FullScreenDialog open={open}  handleClose={closeDialog}  />
     </div>
     );
 

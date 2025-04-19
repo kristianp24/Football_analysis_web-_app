@@ -6,7 +6,9 @@ from .ball_controll import BallController
 from .team_ball_possesion import BallPossesion
 import cv2
 from .ball_possesion_statistics import BallStatistics
-
+from .ball_controll import BallPassController
+from .team_separator import TeamSeparator
+from .pass_counter import PassCounter
 
 def predict(VIDEO_PATH, videoName: str):
     path = VIDEO_PATH + '/' + videoName 
@@ -25,14 +27,57 @@ def predict(VIDEO_PATH, videoName: str):
     ball_possesion = BallPossesion(tracked_data, valid_bboxes_ball)
     tracked_data = ball_possesion.set_possesions()
 
-    print('Drawing annotations')    
-    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
+    ball_pass_controller = BallPassController(valid_bboxes_ball, len(video_frames), tracked_data['player'])
+    valid_bboxes_ball2 = ball_pass_controller.get_corrected_valid_bboxes()
 
-    with open("modified_players_data.json", "w") as f:
-        json.dump(tracked_data, f)
-    VideoUtils.writeVideo(drawed_frames, 'predicted/tracked_with_v9.avi')
+    print('Drawing annotations')    
+    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball2)
+
+    team_separator = TeamSeparator(tracked_data)
+    new_data, centers = team_separator.separate_teams()
+
+    ball_statistics = BallStatistics(tracked_data['player'])
+    percentage_1, percentage_2, count_1, count_2 = ball_statistics.calculate_statistics_possesion()
+
+    pass_counter = PassCounter(len(video_frames), new_data)
+    team_0_passes, team_1_passes = pass_counter.get_number_of_passes()
+     
+    colour_team_0 = bgr_to_rgb(centers[0].tolist())
+    colour_team_1 = bgr_to_rgb(centers[1].tolist())
+
+    prediction_data ={
+        'video_name': videoName,
+        'team_0': {
+            'percentage_possesion': int(percentage_1),
+            'number_of_passes': int(team_0_passes),
+            'possesion_count': int(count_1),
+            'colour': colour_team_0,
+            'name': 'NA'
+        },
+        'team_1': {
+            'percentage_possesion': int(percentage_2),
+            'number_of_passes': int(team_1_passes),
+            'possesion_count': int(count_2),
+            'colour': colour_team_1,
+            'name': 'NA'
+        },
+    }
+    print(prediction_data)
+    
+
+
+
+    # with open("modified_players_data.json", "w") as f:
+    #     json.dump(tracked_data, f)
+    # VideoUtils.writeVideo(drawed_frames, 'predicted_video/tracked_with_v9.avi')
     print('Predicted video saved')
-    return True
+    return True, prediction_data
     # print(players_data)
     # ball_statistics = BallStatistics(tracked_data)
     # ball_statistics.calculate_ball_percentage_possesion_per_team()
+
+def bgr_to_rgb(bgr_colour):
+    r = int(bgr_colour[2])
+    g = int(bgr_colour[1])
+    b = int(bgr_colour[0])
+    return (r, g, b)
