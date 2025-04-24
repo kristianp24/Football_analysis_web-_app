@@ -1,66 +1,152 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextFieldTeamDialog from './TextFieldTeamDialog';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+import SaveIcon from '@mui/icons-material/Save';
+import { Box, ListItem, OutlinedInput } from '@mui/material';
+import {TextField} from '@mui/material';
+import getFullName from '../requests/getFullNameRequest';
+import getEmail from '../requests/getUserEmail';
+import StatisticsDisplay from './StatisticsDisplay';
 
-export default function FormDialog({openForm, onClose, openDialog}) {
-  const [open, setOpen] = React.useState(false);
-  const [color1, setColor1] = React.useState('rgb(122, 168, 37)');
-  const [color2, setColor2] = React.useState('rgb(199, 134, 60)');
-  React.useEffect(() => {
-    setOpen(openForm);
-    const prediction = JSON.parse(sessionStorage.getItem('prediction'));
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+export default function FullScreenDialog({open,handleClose, predictionData}) {
+  const [name, setName] = React.useState(null);
+  const [email, setEmail] = React.useState(null);
+  const [data, setData] = React.useState({'team_0': "NA", 'team_1':"NA"});
    
-    const [r, g, b] = prediction.team_0.colour;
-    setColor1(`rgb(${r}, ${g}, ${b})`);
-    const [r2, g2, b2] = prediction.team_1.colour;
-    setColor2(`rgb(${r2}, ${g2}, ${b2})`);
-  }, [openForm])
- 
-  
-  const onSubmit = (e) => {
-    const team1 = document.getElementById('team1').value;
-    const team2 = document.getElementById('team2').value;
-    
+  React.useEffect(() => {
+    getName();
+    getUserEmail();
     const prediction = JSON.parse(sessionStorage.getItem('prediction'));
-    console.log(prediction);
-    prediction['team_0']['name'] = team1;
-    prediction['team_1']['name'] = team2;
-    
-    
-    sessionStorage.setItem('prediction', JSON.stringify(prediction));
-    
-    setOpen(false);
-    onClose();
-    openDialog();
+    console.log('Type of prediction!!!', typeof(prediction))
+    if (prediction === null || prediction === typeof(undefined)){
+       const pred = {'team_0': "NA", 'team_1':"NA"}
+       setData(pred)
+    }
+    else{
+       setData(prediction);
+    }
+   
+  }, [open])
 
+
+  const getUserEmail = () => {
+      const email =  getEmail();
+      console.log(email)
+      if (email !== null){
+        setEmail(email)
+      }
+      else{
+        setName('No item found!')
+      }
   }
+
+  const getName = async () => {
+    const fullName = await getFullName();
+    if (fullName !== null){
+      setName(fullName)
+    }
+    else{
+      setName("Not found!")
+    }
+    
+  }
+
 
   return (
     <React.Fragment>
-      
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Open full-screen dialog
+      </Button> */}
       <Dialog
+        fullScreen
         open={open}
-       
+        onClose={handleClose}
+        TransitionComponent={Transition}
+    
       >
-        <DialogTitle>Put team colours</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-           We detected 2 team colors in this video. Please enter the team names for each colour 
-           for better visualization. Write each team name in the corresponding text colour.
-          </DialogContentText>
-            <TextFieldTeamDialog name="team1Input" id="team1" label="Team 1 name" color={color1} />
-            <TextFieldTeamDialog name="team2Input" id="team2" label="Team 2 name" color={color2} />
-        </DialogContent>
-        <DialogActions>
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Match Statistics
+            </Typography>
+           
+          </Toolbar>
+        </AppBar>
+        <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'center', 
+                pt: 2, 
+                mt: -12,
+                flexDirection: 'column',
+                justifyContent: 'center', 
+                height: '100vh',
+                gap: 2,
+              }}
+        >
+          <Box sx={{ width: '300px', height: '100px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD', 
+                     border: "2px solid black", borderRadius: "10px", 
+          }}>
+            <Typography variant='h6' >Name: {name} </Typography>
+            <Typography variant='h6' >Email: {email}</Typography>
+            
+         
+          </Box>
+        
+       <Box sx={{
+        justifyContent: 'center',
+        flexDirection: 'row',
+        display: 'flex',
+        flexWrap: 'nowrap', 
+        width: '100%',
+       }}>
+          <Box sx={{ width: '400px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
+                      border: "2px solid black", borderRadius: "10px", 
+            }}>
+               <StatisticsDisplay team_name= {data['team_0']['name']}
+                                  passes= {data['team_0']['number_of_passes']} 
+                                  possesion= {data['team_0']['possesion_count']}
+                                  possesion_percentage={data['team_0']['percentage_possesion']}
+               ></StatisticsDisplay>
+          </Box>
+
+          <Box sx={{ width: '400px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
+                      border: "2px solid black", borderRadius: "10px", 
+            }}>
+                 <StatisticsDisplay team_name= {data['team_1']['name']}
+                                  passes= {data['team_1']['number_of_passes']} 
+                                  possesion= {data['team_1']['possesion_count']}
+                                  possesion_percentage={data['team_1']['percentage_possesion']}
+               ></StatisticsDisplay>
+            </Box>
+       </Box>
           
-          <Button type="submit" onClick={onSubmit}>Done</Button>
-        </DialogActions>
+         
+         </Box>
+
       </Dialog>
     </React.Fragment>
   );

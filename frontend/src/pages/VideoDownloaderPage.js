@@ -8,8 +8,8 @@ import useAlertSetter from "../hooks/useAlertSetter";
 import axios from "axios";
 import saveVideo from "../requests/saveVideoRequest";
 import predictVideo from "../requests/predictVideoRequest";
-import FormDialog from "../components/StatisticsDialog";
-import FullScreenDialog from "../components/ProfileDialog";
+import FormDialog from "../components/TeamColoursDialog";
+import FullScreenDialog from "../components/StatisticsDialog";
 
 
 const VideoDownloaderPage = () => {
@@ -20,6 +20,7 @@ const VideoDownloaderPage = () => {
      const { alert, showAlert } = useAlertSetter();
      const [open, setOpen] = useState(false);
      const [openTeamForm, setOpenTeamForm] = useState(false)
+     const [hiddenStatisticsButton, setHidden] = useState(true);
      
     //  useEffect(() => {
     //     const checkAndRedirect = async  () => {    
@@ -95,6 +96,7 @@ const VideoDownloaderPage = () => {
                     if (prediction.status === 200) {
                         showAlert('success', 'Prediction completed successfully!'); 
                         sessionStorage.setItem('prediction', JSON.stringify(prediction.data.data));
+                        setHidden(true);
                         console.log(prediction.data.data);
                        
                     }
@@ -111,16 +113,20 @@ const VideoDownloaderPage = () => {
     }
 
     const handleStatistics = () => {
-        
+       
         if (sessionStorage.getItem('prediction') == null) {
             showAlert('warning', 'Please upload a video and wait for the prediction!');     
             return;
         }
-        const prediction = sessionStorage.getItem('prediction');
-        setOpenTeamForm(true);
-        // openDialog();
+        const prediction = JSON.parse(sessionStorage.getItem('prediction'));
+        if (prediction['team_0']['name'] !== 'NA'){
+            setOpen(true);
+        }
+        else{
+            setOpenTeamForm(true);
+        }
         
-
+  
     }
 
 
@@ -181,7 +187,8 @@ const VideoDownloaderPage = () => {
                 Predict Video
             </Button>
 
-            <Button onClick={handleStatistics} style={{color: 'white', marginTop: '10px', marginLeft: '5px'}} variant="contained" title= "View statistics" >
+            <Button onClick={handleStatistics} style={{color: 'white', marginTop: '10px', marginLeft: '5px'}} variant="contained" title= "View statistics"
+                     hidden={hiddenStatisticsButton}>
                 View Statistics
             </Button>
        

@@ -31,7 +31,7 @@ def predict(VIDEO_PATH, videoName: str):
     valid_bboxes_ball2 = ball_pass_controller.get_corrected_valid_bboxes()
 
     print('Drawing annotations')    
-    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball2)
+    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
 
     team_separator = TeamSeparator(tracked_data)
     new_data, centers = team_separator.separate_teams()

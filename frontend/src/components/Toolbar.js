@@ -13,7 +13,7 @@ import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded
 import PasswordRoundedIcon from '@mui/icons-material/PasswordRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import FullScreenDialog from './ProfileDialog';
+import FullScreenDialog from './StatisticsDialog';
 import { useNavigate } from 'react-router-dom';
 import logout from '../requests/logoutRequest';
 import getFullName from '../requests/getFullNameRequest';

@@ -44,7 +44,8 @@ const LogInForm = () => {
             console.log(response['data']['token'])
             const token = response['data']['token']
             localStorage.setItem("token", token);
-            localStorage.setItem("sth","prove")
+           
+            showAlert('success', 'Login successful!');
             navigate('/VideoDownload');
           }
           else if (response.status === 401 || response.status === 409 || response.status === 500) {
