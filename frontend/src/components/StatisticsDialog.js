@@ -17,6 +17,7 @@ import {TextField} from '@mui/material';
 import getFullName from '../requests/getFullNameRequest';
 import getEmail from '../requests/getUserEmail';
 import StatisticsDisplay from './StatisticsDisplay';
+import downloadHeatmap from '../requests/getHeatmap';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -42,6 +43,18 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
    
   }, [open])
 
+  const handleDownloadHeatmap = (team_name, team_cluster) => {
+    if (sessionStorage.getItem('prediction') !== null){
+       console.log('Team name:', team_name)
+    console.log('Team cluster:', team_cluster)
+    downloadHeatmap(team_name, team_cluster);
+    }
+    else{
+       console.log('No prediction data found!')
+       return;
+    }
+    
+  }
 
   const getUserEmail = () => {
       const email =  getEmail();
@@ -131,6 +144,10 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
                                   possesion= {data['team_0']['possesion_count']}
                                   possesion_percentage={data['team_0']['percentage_possesion']}
                ></StatisticsDisplay>
+
+               <Button variant="contained" startIcon={<SaveIcon />} sx={{ mt: 2 }} onClick={() => handleDownloadHeatmap(data['team_0']['name'], 0)}>
+                Generate Team Heatmap
+              </Button>
           </Box>
 
           <Box sx={{ width: '400px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
@@ -141,6 +158,9 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
                                   possesion= {data['team_1']['possesion_count']}
                                   possesion_percentage={data['team_1']['percentage_possesion']}
                ></StatisticsDisplay>
+               <Button variant="contained" startIcon={<SaveIcon />} sx={{ mt: 2 }} onClick={() => handleDownloadHeatmap(data['team_1']['name'], 1)}>
+                Generate Team Heatmap
+              </Button>
             </Box>
        </Box>
           

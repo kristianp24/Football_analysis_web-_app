@@ -67,8 +67,8 @@ def predict(VIDEO_PATH, videoName: str):
 
 
 
-    # with open("modified_players_data.json", "w") as f:
-    #     json.dump(tracked_data, f)
+    with open("tracked_test3.mp4.json", "w") as f:
+        json.dump(new_data, f)
     # VideoUtils.writeVideo(drawed_frames, 'predicted_video/tracked_with_v9.avi')
     print('Predicted video saved')
     return True, prediction_data
