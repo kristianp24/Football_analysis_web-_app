@@ -10,6 +10,8 @@ from .ball_controll import BallPassController
 from .team_separator import TeamSeparator
 from .pass_counter import PassCounter
 
+PREDICTED_VIDEO_PATH = 'C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/predicted_video/predicted.avi'
+
 def predict(VIDEO_PATH, videoName: str):
     path = VIDEO_PATH + '/' + videoName 
     print(path)
@@ -17,9 +19,10 @@ def predict(VIDEO_PATH, videoName: str):
     print(len(video_frames))
     print('Readed video')
     tracker = Tracker('C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/model/weights_v9.pt')
-    tracked_file = 'tracked_' + videoName + '.json'
+    tracked_file = 'C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/tracked_data/tracked_data.json'
     print('Tracking objects')
-    tracked_data = tracker.track_objects(video_frames, tracked_file)
+    tracked_data = tracker.track_objects(video_frames, tracked_file, video_name=videoName)
+    tracked_data ['video_name'] = videoName
 
     ball_controller = BallController()
     valid_bboxes_ball = ball_controller.get_valid_ball_bboxes(len(video_frames), tracked_data)
@@ -67,9 +70,9 @@ def predict(VIDEO_PATH, videoName: str):
 
 
 
-    with open("tracked_test3.mp4.json", "w") as f:
+    with open(tracked_file, "w") as f:
         json.dump(new_data, f)
-    # VideoUtils.writeVideo(drawed_frames, 'predicted_video/tracked_with_v9.avi')
+    VideoUtils.writeVideo(drawed_frames, PREDICTED_VIDEO_PATH)
     print('Predicted video saved')
     return True, prediction_data
     # print(players_data)

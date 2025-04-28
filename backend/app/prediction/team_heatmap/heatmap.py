@@ -6,7 +6,7 @@ def get_centre(bbox):
         return cx1, cy1
 
 class Heatmap:
-     def __init__(self, team_cluster, file_name = "C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/tracked_test3.mp4.json"):
+     def __init__(self, team_cluster, file_name = "C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/tracked_data/tracked_data.json"):
         self.team_cluster = team_cluster
         self.file_name = file_name
 
@@ -57,6 +57,6 @@ class Heatmap:
         plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
         buf.seek(0)
         plt.close()
-        buf.close()
+        
 
         return buf

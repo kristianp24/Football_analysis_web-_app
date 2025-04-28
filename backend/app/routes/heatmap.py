@@ -17,6 +17,7 @@ def create_heatmap():
     heatmap_buf = heatmap.create_heatmap()
     
     heatmap_buf.seek(0)
+    
 
     return send_file(
         heatmap_buf,

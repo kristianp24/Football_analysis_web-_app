@@ -10,7 +10,7 @@ const downloadHeatmap = async (team_name, team_cluster) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                responseType: 'blob'  // important, since server sends back an image
+                responseType: 'blob'  
             }
         );
 
@@ -18,7 +18,7 @@ const downloadHeatmap = async (team_name, team_cluster) => {
         const a = document.createElement('a');
         a.href = url;
 
-        a.download = 'heatmap.png'; 
+        a.download = `${team_name}_heatmap.png`; 
         document.body.appendChild(a);
         a.click(); 
         a.remove(); 

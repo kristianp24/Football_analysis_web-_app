@@ -44,11 +44,13 @@ class Tracker:
 
         return detections
 
-    def track_objects(self, frames, path_to_json):
+    def track_objects(self, frames, path_to_json, video_name):
         tracked_data = TrackingUtils.read_tracked_data(path_to_json)
         if tracked_data is not None:
-            print('Data already tracked')
-            return tracked_data
+            if tracked_data['video_name'] == video_name:
+                print('Tracked data already exists')
+                return tracked_data
+            
         detected_frames = self.frame_detection(frames)
 
         # intializing a data structure to store the tracks
@@ -92,7 +94,8 @@ class Tracker:
                 if detection[5]['class_name'] == 'ball':
                     tracked_data = TrackingUtils.add_tracked_data(tracked_data, 'ball', bounding_box, class_id,
                                                                   1, number)
-
+        
+        tracked_data['video_name'] = video_name
         TrackingUtils.write_tracked_data(path_to_json, tracked_data)
         print('Data saved in file!')
 
@@ -109,7 +112,6 @@ class Tracker:
             player_list = [player for player in tracked_data['player'] if player['frame_number'] == nr]
             referee_list = [referee for referee in tracked_data['referees'] if referee['frame_number'] == nr]
             goalkeeper_list = [goalkeeper for goalkeeper in tracked_data['goalkeeper'] if goalkeeper['frame_number'] == nr]
-            # ball_list = [ball for ball in tracked_data['ball'] if ball['frame_number'] == nr]
             print('Drawing ellipses and ids...')
 
             for player in player_list:
