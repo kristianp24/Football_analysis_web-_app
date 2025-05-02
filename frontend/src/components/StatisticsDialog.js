@@ -143,6 +143,8 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
                                   passes= {data['team_0']['number_of_passes']} 
                                   possesion= {data['team_0']['possesion_count']}
                                   possesion_percentage={data['team_0']['percentage_possesion']}
+                                  km_runned={data['team_0']['km_runned']}
+                                  avg_speed_player={data['team_0']['avg_speed_player']}
                ></StatisticsDisplay>
 
                <Button variant="contained" startIcon={<SaveIcon />} sx={{ mt: 2 }} onClick={() => handleDownloadHeatmap(data['team_0']['name'], 0)}>
@@ -157,6 +159,8 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
                                   passes= {data['team_1']['number_of_passes']} 
                                   possesion= {data['team_1']['possesion_count']}
                                   possesion_percentage={data['team_1']['percentage_possesion']}
+                                  km_runned={data['team_1']['km_runned']}
+                                  avg_speed_player={data['team_1']['avg_speed_player']}
                ></StatisticsDisplay>
                <Button variant="contained" startIcon={<SaveIcon />} sx={{ mt: 2 }} onClick={() => handleDownloadHeatmap(data['team_1']['name'], 1)}>
                 Generate Team Heatmap
