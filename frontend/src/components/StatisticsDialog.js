@@ -18,6 +18,7 @@ import getFullName from '../requests/getFullNameRequest';
 import getEmail from '../requests/getUserEmail';
 import StatisticsDisplay from './StatisticsDisplay';
 import downloadHeatmap from '../requests/getHeatmap';
+import getMatchReport from '../requests/getMatchReport';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -78,6 +79,17 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
     
   }
 
+  const downloadReport = async () => {
+    if (sessionStorage.getItem('prediction') !== null){
+      const data = JSON.parse(sessionStorage.getItem('prediction'));
+      getMatchReport(data);
+   }
+   else{
+      console.log('No prediction data found!')
+      return;
+   }
+  }
+
 
   return (
     <React.Fragment>
@@ -104,7 +116,7 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Match Statistics
             </Typography>
-           
+           <Button autoFocus color="inherit" onClick={() => downloadReport() }> Download as PDF </Button>
           </Toolbar>
         </AppBar>
         <Box 
@@ -136,7 +148,7 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
         flexWrap: 'nowrap', 
         width: '100%',
        }}>
-          <Box sx={{ width: '400px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
+          <Box sx={{ width: '500px', height: '300px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
                       border: "2px solid black", borderRadius: "10px", 
             }}>
                <StatisticsDisplay team_name= {data['team_0']['name']}
@@ -152,7 +164,7 @@ export default function FullScreenDialog({open,handleClose, predictionData}) {
               </Button>
           </Box>
 
-          <Box sx={{ width: '400px', height: '250px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
+          <Box sx={{ width: '500px', height: '300px', p:1, m: 2 , alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column', backgroundColor: '#BDBDBD',
                       border: "2px solid black", borderRadius: "10px", 
             }}>
                  <StatisticsDisplay team_name= {data['team_1']['name']}
