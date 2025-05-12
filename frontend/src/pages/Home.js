@@ -7,9 +7,7 @@ const Home = () => {
         <div className="Home">    
               <header className="Home-header">
                 {/* <img src={logo} className="Home-logo" alt="logo" /> */}
-                  <p id='welcome-txt'>
-                    Welcome to Football Analysys App
-                  </p>
+                 
                   <div style={{display: 'flex', justifyContent: 'center'}}>
                 <LogInForm />
           

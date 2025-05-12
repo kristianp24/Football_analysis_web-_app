@@ -21,7 +21,7 @@ def predict(VIDEO_PATH, videoName: str):
     duration, no_frames, video_frames = get_duration_frame_nr(path)  
 
     print('Readed video')
-    tracker = Tracker('C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/model/weights_v9.pt')
+    tracker = Tracker('C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/model/weights_v18.pt')
     tracked_file = 'C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/tracked_data/tracked_data.json'
     print('Tracking objects')
     tracked_data = tracker.track_objects(video_frames, tracked_file, video_name=videoName)
@@ -37,7 +37,7 @@ def predict(VIDEO_PATH, videoName: str):
     # valid_bboxes_ball2 = ball_pass_controller.get_corrected_valid_bboxes()
 
     print('Drawing annotations')    
-    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
+    # drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
 
     team_separator = TeamSeparator(tracked_data)
     new_data, centers = team_separator.separate_teams()
@@ -66,7 +66,7 @@ def predict(VIDEO_PATH, videoName: str):
             'possesion_count': int(count_1),
             'colour': colour_team_0,
             'km_runned': distance_km_team_0,
-            'avg_speed_player': float(np.round(avg_speed_per_player_team_1, 3)),
+            'avg_speed_player': float(np.round(avg_speed_per_player_team_0, 3)),
             'name': 'NA'
         },
         'team_1': {
@@ -84,7 +84,7 @@ def predict(VIDEO_PATH, videoName: str):
     with open(tracked_file, "w") as f:
         json.dump(new_data, f)
 
-    VideoUtils.writeVideo(drawed_frames, PREDICTED_VIDEO_PATH)
+    # VideoUtils.writeVideo(drawed_frames, PREDICTED_VIDEO_PATH)
     print('Predicted video saved')
     return True, prediction_data
     

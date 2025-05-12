@@ -41,7 +41,7 @@ class MatchReportCreator:
     def create_pdf(self):
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
-        height = A4
+        width, height = A4
         
         c.setFont("Helvetica-Bold", 24)
         c.drawString(100, height - 50, f"Match Report {self.report['video_name']}")

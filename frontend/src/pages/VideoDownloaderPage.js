@@ -96,7 +96,7 @@ const VideoDownloaderPage = () => {
                     if (prediction.status === 200) {
                         showAlert('success', 'Prediction completed successfully!'); 
                         sessionStorage.setItem('prediction', JSON.stringify(prediction.data.data));
-                        setHidden(true);
+                        setHidden(false);
                         console.log(prediction.data.data);
                        
                     }
@@ -187,10 +187,17 @@ const VideoDownloaderPage = () => {
                 Predict Video
             </Button>
 
-            <Button onClick={handleStatistics} style={{color: 'white', marginTop: '10px', marginLeft: '5px'}} variant="contained" title= "View statistics"
-                     hidden={hiddenStatisticsButton}>
-                View Statistics
-            </Button>
+           {!hiddenStatisticsButton && (
+                <Button
+                    onClick={handleStatistics}
+                    style={{ color: 'white', marginTop: '10px', marginLeft: '5px' }}
+                    variant="contained"
+                    title="View statistics"
+                >
+                    View Statistics
+                </Button>
+                )}
+
        
         </div>
           
