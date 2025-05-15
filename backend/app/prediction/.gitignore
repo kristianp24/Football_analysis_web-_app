@@ -6,3 +6,5 @@
 /input_video
 /tracked_data
 /saved_data
+/first_frame
+.env

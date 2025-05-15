@@ -19,6 +19,8 @@ import getEmail from '../requests/getUserEmail';
 import downloadHeatmap from '../requests/getHeatmap';
 import getMatchReport from '../requests/getMatchReport';
 import CountUp from 'react-countup';
+import AlertComponent from "../components/Alert";
+import useAlertSetter from "../hooks/useAlertSetter";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -49,6 +51,8 @@ export default function FullScreenDialog({ open, handleClose }) {
   const [name, setName] = React.useState(null);
   const [email, setEmail] = React.useState(null);
   const [data, setData] = React.useState({ 'team_0': {}, 'team_1': {} });
+  const { alert, showAlert } = useAlertSetter();
+
 
   React.useEffect(() => {
     getFullName().then(setName);
@@ -60,6 +64,7 @@ export default function FullScreenDialog({ open, handleClose }) {
 
   const handleDownloadHeatmap = (teamName, teamCluster) => {
     if (sessionStorage.getItem('prediction')) {
+      showAlert('warning', 'The heatmap is being generated, it may take 1-2 minutes, it will be downloaded automatically!')
       downloadHeatmap(teamName, teamCluster);
     } else {
       console.log('No prediction data found!');
@@ -95,7 +100,18 @@ export default function FullScreenDialog({ open, handleClose }) {
     const [spd0, spd1] = getHighlightFlags('avg_speed_player');
 
     return (
+      
       <Grid item xs={12} md={5} key={team.name}>
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
+            {alert.visible && 
+                                <AlertComponent 
+                                    severity={alert.severity} 
+                                    message={alert.message} 
+                                    style={{ width: '100%', boxSizing: 'border-box' }} 
+                                />
+                            }
+            
+            </div>
         <Card sx={{ p: 3, borderRadius: 3 }}>
           <Typography variant="h6" gutterBottom>{team.name}</Typography>
           <StatRow icon={<PercentIcon />} label="Possession" value={formatCountUp(team.percentage_possesion, '%', 0)} highlight={isTeam0 ? pos0 : pos1} isNegative={isTeam0 ? pos1 : pos0} />

@@ -18,8 +18,8 @@ load_dotenv()
 
 
 class Tracker:
-    def __init__(self, path):
-        self.model = YOLO(path)
+    def __init__(self):
+        self.model = YOLO(os.getenv("MODEL_PATH"))
         self.tracker = sv.ByteTrack(lost_track_buffer=40, minimum_matching_threshold=0.85, track_activation_threshold=0.35)
         self.colour_assignment = ColourAssignment()
         self.referee_colour = (0, 255, 255)
@@ -44,8 +44,8 @@ class Tracker:
 
         return detections
 
-    def track_objects(self, frames, path_to_json, video_name):
-        tracked_data = TrackingUtils.read_tracked_data(path_to_json)
+    def track_objects(self, frames, video_name):
+        tracked_data = TrackingUtils.read_tracked_data(os.getenv("TRACKED_FILE"))
         if tracked_data is not None:
             if tracked_data['video_name'] == video_name:
                 print('Tracked data already exists')
@@ -96,7 +96,7 @@ class Tracker:
                                                                   1, number)
         
         tracked_data['video_name'] = video_name
-        TrackingUtils.write_tracked_data(path_to_json, tracked_data)
+        TrackingUtils.write_tracked_data(os.getenv("TRACKED_FILE"), tracked_data)
         print('Data saved in file!')
 
         return tracked_data

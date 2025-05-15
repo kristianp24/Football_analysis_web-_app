@@ -11,20 +11,21 @@ from .team_separator import TeamSeparator
 from .pass_counter import PassCounter
 from .team_kilometers_speed_estimator import TeamKilometersEstimator, estimate_avg_speed_per_player
 from moviepy.video.io.VideoFileClip import VideoFileClip
-
-
-PREDICTED_VIDEO_PATH = 'C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/predicted_video/predicted.avi'
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 def predict(VIDEO_PATH, videoName: str):
     path = VIDEO_PATH + '/' + videoName 
     
     duration, no_frames, video_frames = get_duration_frame_nr(path)  
+    cv2.imwrite(os.getenv('FIRST_FRAME_PATH'), video_frames[0])
 
     print('Readed video')
-    tracker = Tracker('C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/model/weights_v18.pt')
-    tracked_file = 'C:/Users/HP/OneDrive/Desktop/football_analysys_web_app/backend/app/prediction/tracked_data/tracked_data.json'
+    tracker = Tracker()
+    
     print('Tracking objects')
-    tracked_data = tracker.track_objects(video_frames, tracked_file, video_name=videoName)
+    tracked_data = tracker.track_objects(video_frames, video_name=videoName)
     tracked_data ['video_name'] = videoName
 
     ball_controller = BallController()
@@ -32,9 +33,6 @@ def predict(VIDEO_PATH, videoName: str):
 
     ball_possesion = BallPossesion(tracked_data, valid_bboxes_ball)
     tracked_data = ball_possesion.set_possesions()
-
-    ball_pass_controller = BallPassController(valid_bboxes_ball, len(video_frames), tracked_data['player'])
-    # valid_bboxes_ball2 = ball_pass_controller.get_corrected_valid_bboxes()
 
     print('Drawing annotations')    
     # drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
@@ -58,7 +56,7 @@ def predict(VIDEO_PATH, videoName: str):
     colour_team_0 = bgr_to_rgb(centers[0].tolist())
     colour_team_1 = bgr_to_rgb(centers[1].tolist())
 
-    prediction_data ={
+    prediction_data = {
         'video_name': videoName,
         'team_0': {
             'percentage_possesion': int(percentage_1),
@@ -81,10 +79,10 @@ def predict(VIDEO_PATH, videoName: str):
     }
     print(prediction_data)
     
-    with open(tracked_file, "w") as f:
+    with open(os.getenv("TRACKED_FILE"), "w") as f:
         json.dump(new_data, f)
 
-    # VideoUtils.writeVideo(drawed_frames, PREDICTED_VIDEO_PATH)
+    # VideoUtils.writeVideo(drawed_frames, os.getenv("PREDICTED_VIDEO_PATH"))
     print('Predicted video saved')
     return True, prediction_data
     

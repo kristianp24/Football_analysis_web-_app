@@ -60,7 +60,7 @@ const LogInForm = () => {
         >
           <Box
             component="img"
-            src="/football_tactic.jpg"
+            src="/logo2.png"
             alt="football graphic"
             sx={{ width: '55%', maxWidth: 280, mb: 3, filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.4))' }}
           />
@@ -78,7 +78,7 @@ const LogInForm = () => {
               Welcome Back
             </Typography>
             <Typography variant="body2" sx={{ mb: 3 }}>
-              Log in to analyze, predict football videos and get a match report.
+              Log in to analyze, predict football videos and get an instant match report.
             </Typography>
 
             {alert.visible && (

@@ -29,6 +29,11 @@ export default function FormDialog({openForm, onClose, openDialog}) {
   const onSubmit = (e) => {
     const team1 = document.getElementById('team1').value;
     const team2 = document.getElementById('team2').value;
+
+    if (team1 === '' || team2 === ''){
+      return;
+    }
+
     
     const prediction = JSON.parse(sessionStorage.getItem('prediction'));
     console.log(prediction);
@@ -46,6 +51,7 @@ export default function FormDialog({openForm, onClose, openDialog}) {
 
   return (
     <React.Fragment>
+     
       
       <Dialog
         open={open}

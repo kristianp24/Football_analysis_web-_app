@@ -89,7 +89,8 @@ const VideoDownloaderPage = () => {
             const response = await saveVideo(formData)
             console.log(response);
             if (response.status === 200) {
-                showAlert('success', 'Video saved successfully! Wait for the prediction!');
+                showAlert('success', 'Video saved successfully! A "View Statics" button will appear on this page when prediction is done!');
+                
                 try{
                     const prediction = await predictVideo();
                     console.log(prediction);
