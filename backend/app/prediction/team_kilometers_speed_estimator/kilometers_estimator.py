@@ -56,8 +56,7 @@ class TeamKilometersEstimator:
 
     def find_kilometers_runned(self, team_cluster):
         max_speed = self.max_speed
-        frame_time = self.no_frames / self.video_length
-
+        frame_duration = self.video_length / self.no_frames
         team = [player for player in self.data['player'] if player['team'] == team_cluster]
         team_modified = self._modify_team_data(team)
         unique_ids = self._get_unique_ids(team_modified)
@@ -83,7 +82,7 @@ class TeamKilometersEstimator:
                     dy = player_position['center_y'] - last_positon_Y
 
                     distance = math.hypot(dx, dy)
-                    speed = distance / frame_time
+                    speed = distance / frame_duration
                     if speed > max_speed:
                         continue
                     # if distance < 0.1:
@@ -94,8 +93,9 @@ class TeamKilometersEstimator:
 
             dict_distances[str(id)] = sum(distances)
 
-        sum_meters = np.round(sum(dict_distances.values()))
-        sum_kilometers = np.round(sum_meters / 1000, 3)
+        sum_meters = sum(dict_distances.values())
+        sum_kilometers = round(sum_meters / 1000, 3)
+        sum_meters = round(sum_meters)
 
         return sum_meters, sum_kilometers
 

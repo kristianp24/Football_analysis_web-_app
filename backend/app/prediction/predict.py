@@ -10,10 +10,49 @@ from .ball_controll import BallPassController
 from .team_separator import TeamSeparator
 from .pass_counter import PassCounter
 from .team_kilometers_speed_estimator import TeamKilometersEstimator, estimate_avg_speed_per_player
+from .track_pitch_keypoints import ReferencePointsTracker
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from dotenv import load_dotenv
 import os
 load_dotenv()
+
+def is_false_ball_detection(ball_box, player_box, proximity_threshold=20):
+    """
+    Returns True if the ball detection is likely a false positive:
+    very close to player's feet AND inside the player bbox.
+    
+    :param ball_box: Tuple (x1, y1, x2, y2) for the ball
+    :param player_box: Tuple (x1, y1, x2, y2) for the player
+    :param proximity_threshold: Distance in pixels to feet below which it's suspicious
+    :return: True if it should be filtered out, False otherwise
+    """
+    import math
+
+    def center(box):
+        x1, y1, x2, y2 = box
+        return ((x1 + x2) // 2, (y1 + y2) // 2)
+
+    def feet_position(box):
+        x1, y1, x2, y2 = box
+        return ((x1 + x2) // 2, y2)
+
+    def distance(p1, p2):
+        return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+    def is_inside(inner, outer):
+        ix1, iy1, ix2, iy2 = inner
+        ox1, oy1, ox2, oy2 = outer
+        return ix1 >= ox1 and iy1 >= oy1 and ix2 <= ox2 and iy2 <= oy2
+
+    ball_center = center(ball_box)
+    player_feet = feet_position(player_box)
+
+    if distance(ball_center, player_feet) < proximity_threshold and is_inside(ball_box, player_box):
+        return True  # This is a likely false detection
+    return False  # This is likely a valid ball
+
+
+
 
 def predict(VIDEO_PATH, videoName: str):
     path = VIDEO_PATH + '/' + videoName 
@@ -31,14 +70,18 @@ def predict(VIDEO_PATH, videoName: str):
     ball_controller = BallController()
     valid_bboxes_ball = ball_controller.get_valid_ball_bboxes(len(video_frames), tracked_data)
 
+    
     ball_possesion = BallPossesion(tracked_data, valid_bboxes_ball)
     tracked_data = ball_possesion.set_possesions()
 
     print('Drawing annotations')    
-    # drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
+    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
 
     team_separator = TeamSeparator(tracked_data)
     new_data, centers = team_separator.separate_teams()
+
+    track_pitch_keypoints = ReferencePointsTracker(video_frames, tracked_data)
+    track_pitch_keypoints.track()
 
     ball_statistics = BallStatistics(tracked_data['player'])
     percentage_1, percentage_2, count_1, count_2 = ball_statistics.calculate_statistics_possesion()
@@ -82,12 +125,13 @@ def predict(VIDEO_PATH, videoName: str):
     with open(os.getenv("TRACKED_FILE"), "w") as f:
         json.dump(new_data, f)
 
-    # VideoUtils.writeVideo(drawed_frames, os.getenv("PREDICTED_VIDEO_PATH"))
+    VideoUtils.writeVideo(drawed_frames, os.getenv("PREDICTED_VIDEO_PATH"))
     print('Predicted video saved')
     return True, prediction_data
     
 
 def bgr_to_rgb(bgr_colour):
+
     r = int(bgr_colour[2])
     g = int(bgr_colour[1])
     b = int(bgr_colour[0])

@@ -1,18 +1,14 @@
 from ultralytics import YOLO
-from sports.configs.soccer import SoccerPitchConfiguration
 from sports.annotators.soccer import draw_pitch
+from sports.configs.soccer import SoccerPitchConfiguration
 import json
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from mplsoccer import Pitch
 import io
 import os
-import supervision as sv
 from dotenv import load_dotenv
-from prediction.view_transformer import ViewTransformer
-import cv2
 
 load_dotenv()
 
@@ -22,68 +18,84 @@ class Heatmap:
         self.file_name = os.getenv("TRACKED_FILE")
         self.model = YOLO(os.getenv("KEYPOINTS_MODEL"))
         self.pitch_config = SoccerPitchConfiguration()
-        self.first_frame = cv2.imread(os.getenv("FIRST_FRAME_PATH"))
+        self.projected_points_file = os.getenv("PROJECTED_POINTS_PATH") 
 
-    
      def _get_bottom_center(self,bbox):
         x1, y1, x2, y2 = bbox
         x_center = (x1 + x2) / 2
         y_bottom = y2
         return (x_center, y_bottom)
 
-     def _detect_reference_points(self):
-          result = self.model.predict(self.first_frame)
-          key_points = sv.KeyPoints.from_ultralytics(result[0])
-          filter = key_points.confidence[0] > 0.5
-
-          pitch_reference_points = np.array(self.pitch_config.vertices)[filter]
-          frame_reference_points = key_points.xy[0][filter]
-
-          return pitch_reference_points, frame_reference_points
       
      def _read_data(self):
-            with open(self.file_name, "r") as f:
-                tracked_data = json.load(f) 
-            return tracked_data
+            with open(self.projected_points_file, "r") as f:
+                projected_data = json.load(f) 
+            return projected_data
+
 
      
      def create_heatmap(self): 
-        pitch_reference_points, frame_reference_points = self._detect_reference_points()
-        view_transformer = ViewTransformer(
-             source=frame_reference_points,
-             target=pitch_reference_points
+      scale = 0.1
+      padding = 50
+      all_projected_points = []
+
+      projected_data = self._read_data()
+      key = f'team_{self.team_cluster}'
+      cluster_points = projected_data.get(key, [])
+      if cluster_points is not None:
+          all_projected_points.extend(cluster_points)
+      else:
+          raise ValueError(f"No projected points found for team cluster: {self.team_cluster}")
+
+      if not all_projected_points:
+         raise ValueError("No valid player points found for heatmap.")
+      
+      print('Procesare heatmap')
+      pitch_players_xy = np.array(all_projected_points) * scale + padding
+
+      valid_mask = (
+            (pitch_players_xy[:, 0] >= padding) & (pitch_players_xy[:, 0] <= padding + self.pitch_config.length * scale) &
+            (pitch_players_xy[:, 1] >= padding) & (pitch_players_xy[:, 1] <= padding + self.pitch_config.width * scale)
         )
+      pitch_players_xy = pitch_players_xy[valid_mask]
 
-        tracked_data = self._read_data()
+      x = pitch_players_xy[:, 0]
+      y = pitch_players_xy[:, 1]
 
-        team = [player for player in tracked_data['player'] if player['team'] == self.team_cluster]
-        frame_players_xy = [self._get_bottom_center(player['bbox']) for player in team]
-        pitch_players_xy = view_transformer.transform_points(np.array(frame_players_xy))
+      pitch = draw_pitch(self.pitch_config, scale=scale, padding=padding)
 
-        pitch = draw_pitch(self.pitch_config)
-        x, y = pitch_players_xy[:, 0], pitch_players_xy[:, 1]
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.imshow(pitch, extent=[0, self.pitch_config.length, 0, self.pitch_config.width])
+      fig, ax = plt.subplots(figsize=(12, 8))
+      ax.imshow(pitch, extent=[0, pitch.shape[1], 0, pitch.shape[0]])
 
-        sns.kdeplot(
-            x=x,
-            y=y,
-            cmap="hot",
-            fill=True,
-            thresh=0.05,
-            alpha=0.5,
-            clip=((0, self.pitch_config.length), (0, self.pitch_config.width)),
-            bw_adjust=1,
-        )
-        ax.set_aspect('equal')
-        plt.tight_layout()
-        plt.axis('off')
+      print('Drawing heatmap')
+      print(f"Number of points: {len(x)}")
+      if len(x) >= 3:
+         
+            sns.kdeplot(
+                x=x,
+                y=y,
+                cmap="hot",
+                fill=True,
+                thresh=0.05,
+                alpha=0.5,
+                clip=(
+                    (padding, padding + self.pitch_config.length * scale),
+                    (padding, padding + self.pitch_config.width * scale)
+                ),
+                bw_adjust=0.7,
+                ax=ax
+            )
 
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
-        buf.seek(0)
-        plt.close()
-        
+      ax.set_xlim(0, pitch.shape[1])
+      ax.set_ylim(0, pitch.shape[0])
+      ax.invert_yaxis()
+      ax.set_aspect('equal')
+      plt.axis('off')
+      plt.tight_layout()
 
-        return buf
+      buf = io.BytesIO()
+      plt.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+      buf.seek(0)
+      plt.close()
+
+      return buf

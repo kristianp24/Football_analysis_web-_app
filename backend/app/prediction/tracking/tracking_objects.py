@@ -138,7 +138,7 @@ class Tracker:
                     if isinstance(x1, str):
                         continue
                     aux_frame = TrackingUtils.draw_triangle(aux_frame, bbox_ball, colour=(255, 0, 0), object_type="ball")
-                    # cv2.rectangle(aux_frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), thickness=4)
+                    cv2.rectangle(aux_frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), thickness=4)
 
             output.append(aux_frame)
         # with open('writed_video/teamdata.text', 'w') as file:

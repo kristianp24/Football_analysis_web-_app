@@ -20,6 +20,7 @@ const LogInForm = () => {
   const navigate = useNavigate();
   const { alert, showAlert } = useAlertSetter();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [disableButton, setDisableButton] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -27,15 +28,17 @@ const LogInForm = () => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('outlined-adornment-password').value;
+    setDisableButton(true);
     const response = await loginUser(email, password);
 
     if (response.status === 200 && response.data.token) {
       const token = response.data.token;
       localStorage.setItem("token", token);
       showAlert('success', 'Login successful!');
-      navigate('/VideoDownload');
+      navigate('/VideoDownload', {replace : true});
     } else if (response.status === 401 || response.status === 409 || response.status === 500) {
       showAlert('error', response.response.data.error);
+      setDisableButton(false);
     }
   };
 
@@ -138,6 +141,7 @@ const LogInForm = () => {
               color="primary"
               sx={{ mt: 2, mb: 2 }}
               onClick={sendData}
+              disabled={disableButton}
             >
               Log In
             </Button>

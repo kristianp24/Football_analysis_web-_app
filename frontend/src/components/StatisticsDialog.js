@@ -52,6 +52,7 @@ export default function FullScreenDialog({ open, handleClose }) {
   const [email, setEmail] = React.useState(null);
   const [data, setData] = React.useState({ 'team_0': {}, 'team_1': {} });
   const { alert, showAlert } = useAlertSetter();
+  const [disableButton, setDisableButton] = React.useState(false);
 
 
   React.useEffect(() => {
@@ -64,11 +65,18 @@ export default function FullScreenDialog({ open, handleClose }) {
 
   const handleDownloadHeatmap = (teamName, teamCluster) => {
     if (sessionStorage.getItem('prediction')) {
+      setDisableButton(true);
       showAlert('warning', 'The heatmap is being generated, it may take 1-2 minutes, it will be downloaded automatically!')
-      downloadHeatmap(teamName, teamCluster);
+      try {
+        downloadHeatmap(teamName, teamCluster);
+      } finally {
+        setDisableButton(false);
+      }
     } else {
+      
       console.log('No prediction data found!');
     }
+    
   };
 
   const downloadReport = () => {
@@ -120,7 +128,7 @@ export default function FullScreenDialog({ open, handleClose }) {
           <StatRow icon={<DirectionsRunIcon />} label="Km Run" value={formatCountUp(team.km_runned, ' km')} highlight={isTeam0 ? run0 : run1} isNegative={isTeam0 ? run1 : run0} />
           <StatRow icon={<SpeedIcon />} label="Speed" value={formatCountUp(team.avg_speed_player, ' m/s')} highlight={isTeam0 ? spd0 : spd1} isNegative={isTeam0 ? spd1 : spd0} />
           <Box sx={{ mt: 3 }}>
-            <Button variant="contained" startIcon={<SaveIcon />} fullWidth onClick={() => handleDownloadHeatmap(team.name, clusterIndex)}>
+            <Button disabled={disableButton} variant="contained" startIcon={<SaveIcon />} fullWidth onClick={() => handleDownloadHeatmap(team.name, clusterIndex)}>
               Generate Team Heatmap
             </Button>
           </Box>

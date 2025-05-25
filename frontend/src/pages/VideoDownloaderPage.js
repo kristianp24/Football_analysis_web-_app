@@ -10,7 +10,7 @@ import saveVideo from "../requests/saveVideoRequest";
 import predictVideo from "../requests/predictVideoRequest";
 import FormDialog from "../components/TeamColoursDialog";
 import FullScreenDialog from "../components/StatisticsDialog";
-
+import CircularWithValueLabel from "../components/CircularProgress";
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
@@ -21,7 +21,9 @@ const VideoDownloaderPage = () => {
      const [open, setOpen] = useState(false);
      const [openTeamForm, setOpenTeamForm] = useState(false)
      const [hiddenStatisticsButton, setHidden] = useState(true);
+     const [disableButton, setDisableButton] = useState(false);
      
+
     //  useEffect(() => {
     //     const checkAndRedirect = async  () => {    
     //         const isExpired = await check_token_expiration();
@@ -84,14 +86,15 @@ const VideoDownloaderPage = () => {
      const handleSaveVideo = async () => {
         const formData = new FormData();
         formData.append("video", selectedFile);
+        setDisableButton(true);
         // console.log(selectedFile);
         try {
             const response = await saveVideo(formData)
             console.log(response);
             if (response.status === 200) {
                 showAlert('success', 'Video saved successfully! A "View Statics" button will appear on this page when prediction is done!');
-                
-                try{
+
+                try {
                     const prediction = await predictVideo();
                     console.log(prediction);
                     if (prediction.status === 200) {
@@ -105,6 +108,9 @@ const VideoDownloaderPage = () => {
                 catch (error) {
                     console.log('Error in prediction');
                     console.log(error);
+                }
+                finally {
+                    setDisableButton(false);
                 }
              }
          }
@@ -157,7 +163,7 @@ const VideoDownloaderPage = () => {
       
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '25%', height: '50px', backgroundColor: '#182950', borderRadius: '13px'}}>
-            <Button onClick={() => filePickerRef.current.click()} style={{color: 'white'}} variant="contained" title="Upload Video">
+            <Button id="uploadButton" disabled={disableButton} onClick={() => filePickerRef.current.click()} style={{color: 'white'}} variant="contained" title="Upload Video">
                 Upload Video
                 <input accept="video/*" ref={filePickerRef} id="filepicker" type="file" placeholder="Enter URL" onChange={handleFileChange} hidden='true' />
             </Button>
@@ -184,9 +190,10 @@ const VideoDownloaderPage = () => {
 
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
        
-            <Button onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px', marginRight: '5px'}} variant="contained" title="Download Video">
+            <Button id="predictVideo" disabled={disableButton} onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px', marginRight: '5px'}} variant="contained" title="Download Video">
                 Predict Video
             </Button>
+
 
            {!hiddenStatisticsButton && (
                 <Button
@@ -198,6 +205,8 @@ const VideoDownloaderPage = () => {
                     View Statistics
                 </Button>
                 )}
+            
+
 
        
         </div>
