@@ -111,9 +111,9 @@ export default function ButtonAppBar() {
             <MenuItem >Change personal data <PasswordRoundedIcon style={{marginLeft: '5px'}}/></MenuItem>
           </Menu>
 
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome {name}
-          </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+  Welcome {name ? name : 'User'}
+</Typography>
           <Button color='inherit'>
                   Help
             <HelpRoundedIcon size='small' style={{marginLeft: '5px'}}/>

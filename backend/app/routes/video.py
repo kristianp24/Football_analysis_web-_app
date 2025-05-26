@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from .credentials import VIDEO_PATH
 import os
+from .email_sender import send_prediction_ready_email
 
 video_bp = Blueprint('video_bp', __name__)
 
@@ -24,13 +26,21 @@ def add_video():
         return jsonify({"message":"Video added with success!!"}), 200
 
 @video_bp.route('/predictVideo', methods=['GET'])
+@jwt_required()
 def get_video():
+    user_email = get_jwt_identity()  
+    print('User email:', user_email)
     video = os.listdir(VIDEO_PATH)
     from prediction import predict
     print('Starting prediction')
     is_predicted, data = predict(VIDEO_PATH, video_name)
+    
     if is_predicted:
-        return jsonify({"message":"Video predicted with success!!", "data": data}), 200
+        is_email_sent = send_prediction_ready_email(user_email)
+        if is_email_sent:
+            return jsonify({"message":"Video predicted with success!!", "data": data}), 200
+        else:
+            return jsonify({"error": "Error sending email"}), 500
     else:
         return jsonify({"error": "Error in prediction"}), 500
     

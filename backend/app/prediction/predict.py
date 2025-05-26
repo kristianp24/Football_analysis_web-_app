@@ -125,7 +125,7 @@ def predict(VIDEO_PATH, videoName: str):
     with open(os.getenv("TRACKED_FILE"), "w") as f:
         json.dump(new_data, f)
 
-    VideoUtils.writeVideo(drawed_frames, os.getenv("PREDICTED_VIDEO_PATH"))
+    # VideoUtils.writeVideo(drawed_frames, os.getenv("PREDICTED_VIDEO_PATH"))
     print('Predicted video saved')
     return True, prediction_data
     

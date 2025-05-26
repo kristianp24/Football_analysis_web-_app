@@ -1,7 +1,7 @@
 import React, { use, useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ButtonAppBar from "../components/Toolbar";
-import backgroundImage from "../media/poza2.jpeg";
+import backgroundImage from "../media/fundal.png";
 import Button from "@mui/material/Button";
 import AlertComponent from "../components/Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
@@ -92,7 +92,7 @@ const VideoDownloaderPage = () => {
             const response = await saveVideo(formData)
             console.log(response);
             if (response.status === 200) {
-                showAlert('success', 'Video saved successfully! A "View Statics" button will appear on this page when prediction is done!');
+                showAlert('success', 'Video saved successfully! We will send you an email when the statistics are ready.');
 
                 try {
                     const prediction = await predictVideo();
@@ -162,9 +162,25 @@ const VideoDownloaderPage = () => {
 
       
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '30px'}}>
-        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '25%', height: '50px', backgroundColor: '#182950', borderRadius: '13px'}}>
-            <Button id="uploadButton" disabled={disableButton} onClick={() => filePickerRef.current.click()} style={{color: 'white'}} variant="contained" title="Upload Video">
-                Upload Video
+        <Box
+        sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '30%',
+            height: '50px',
+            backgroundColor: '#0d47a1',
+            borderRadius: '12px',
+            boxShadow: '0px 4px 12px rgba(0,0,0,0.3)'
+        }}
+         >
+        <Button
+        disabled={disableButton}
+        onClick={() => filePickerRef.current.click()}
+        variant="contained"
+        color="primary"
+        sx={{ px: 4, py: 1.5, fontWeight: 600, borderRadius: 2 }}
+        >                Upload Video
                 <input accept="video/*" ref={filePickerRef} id="filepicker" type="file" placeholder="Enter URL" onChange={handleFileChange} hidden='true' />
             </Button>
         </Box>
@@ -174,7 +190,7 @@ const VideoDownloaderPage = () => {
         <Box sx={{
             display: "inline-block",
             border: "2px solid black",
-            borderRadius: "10px",
+            borderRadius: "15px",
             mt: 2,
             backgroundColor: "#182950",
             alignItems: "center",
@@ -183,34 +199,44 @@ const VideoDownloaderPage = () => {
             
             <div>
         
-                <video ref={videoRef} width="600" height="400" controls muted={false}/>
+                <video
+                    ref={videoRef}
+                    width="640"
+                    height="360"
+                    controls
+                    style={{ borderRadius: '12px', backgroundColor: '#000' }}
+                    />
             </div>
         </Box>
         </div>
 
         <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
        
-            <Button id="predictVideo" disabled={disableButton} onClick={handleSaveVideo} style={{color: 'white', marginTop: '10px', marginRight: '5px'}} variant="contained" title="Download Video">
+           <Button
+                disabled={disableButton}
+                onClick={handleSaveVideo}
+                variant="contained"
+                color="secondary"
+                sx={{ px: 4, py: 1.5, ml: 2, fontWeight: 600, borderRadius: 2 }}
+                >
                 Predict Video
-            </Button>
+                </Button>
 
 
            {!hiddenStatisticsButton && (
                 <Button
                     onClick={handleStatistics}
-                    style={{ color: 'white', marginTop: '10px', marginLeft: '5px' }}
+                    
                     variant="contained"
                     title="View statistics"
+                    color="secondary"
+                    sx={{ px: 4, py: 1.5, fontWeight: 600, borderRadius: 2, marginLeft: '20px' }}
                 >
                     View Statistics
                 </Button>
                 )}
-            
+             </div>
 
-
-       
-        </div>
-          
           <FormDialog openForm={openTeamForm}  onClose={() => setOpenTeamForm(false)} openDialog={() => setOpen(true)}/>
             <FullScreenDialog open={open}  handleClose={closeDialog}  />
     </div>

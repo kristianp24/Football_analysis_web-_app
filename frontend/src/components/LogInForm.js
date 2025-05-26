@@ -148,6 +148,7 @@ const LogInForm = () => {
 
             <Grid container justifyContent="space-between">
               <Link
+                disabled={disableButton}
                 component="button"
                 variant="body2"
                 onClick={() => console.info("Reset password clicked")}
@@ -155,6 +156,7 @@ const LogInForm = () => {
                 Forgot password?
               </Link>
               <Link
+                disabled={disableButton}
                 component="button"
                 variant="body2"
                 onClick={() => navigate('/Register')}
