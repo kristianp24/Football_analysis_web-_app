@@ -100,12 +100,30 @@ class Tracker:
         print('Data saved in file!')
 
         return tracked_data
+    
+    def get_player_colours(self, tracked_data, frames):
+        players_modified_data_with_colours = []
+
+        for nr, frame in enumerate(frames):
+            player_list = [player for player in tracked_data['player'] if player['frame_number'] == nr]
+            for player in player_list:
+                x1, y1, x2, y2 = player['bbox']
+                colour = self.colour_assignment.get_colour(player['bbox'], frame)
+                player['colour'] = list(colour)
+                players_modified_data_with_colours.append(player)
+
+        for player in tracked_data['player']:
+            for modified_player in players_modified_data_with_colours:
+                if (player['frame_number'] == modified_player['frame_number'] and
+                    player['tracker_id'] == modified_player['tracker_id']):
+                    player['colour'] = modified_player['colour']
+
+        return tracked_data
+
 
     def draw_annotations(self, frames, tracked_data, ball_list: list):
 
         output = []
-        players_modified_data_with_colours = []
-
         for nr, frame in enumerate(frames):
             aux_frame = frame.copy()
 
@@ -117,13 +135,11 @@ class Tracker:
             for player in player_list:
                 x1, y1, x2, y2 = player['bbox']
 
-                colour =  self.colour_assignment.get_colour(player['bbox'], frame)
-                aux_frame = TrackingUtils.draw_ellipse(aux_frame, player['bbox'], colour)
-                aux_frame = TrackingUtils.write_id(aux_frame, player['tracker_id'], player['bbox'], colour)
+                aux_frame = TrackingUtils.draw_ellipse(aux_frame, player['bbox'], player['colour'])
+                aux_frame = TrackingUtils.write_id(aux_frame, player['tracker_id'], player['bbox'], player['colour'])
                 if player['has_ball']:
                     aux_frame = TrackingUtils.draw_triangle(aux_frame, player['bbox'], colour=(0, 0, 255))
-                player['colour'] = list(colour)
-                players_modified_data_with_colours.append(player)
+
 
             for referee in referee_list:
                 aux_frame = TrackingUtils.draw_ellipse(aux_frame, referee['bbox'], self.referee_colour)
@@ -141,13 +157,5 @@ class Tracker:
                     cv2.rectangle(aux_frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), thickness=4)
 
             output.append(aux_frame)
-        # with open('writed_video/teamdata.text', 'w') as file:
-        #     file.write(team_data)
-        for player in tracked_data['player']:
-            for modified_player in players_modified_data_with_colours:
-                if player['frame_number'] == modified_player['frame_number'] and player['tracker_id'] == modified_player['tracker_id']:
-                    player['colour'] = modified_player['colour']
-
-        # print(tracked_data)
-
-        return output, tracked_data
+      
+        return output

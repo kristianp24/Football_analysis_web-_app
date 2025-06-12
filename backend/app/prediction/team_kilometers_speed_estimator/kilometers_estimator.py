@@ -1,6 +1,6 @@
 import math
 import pandas as pd
-import numpy as np
+
 class TeamKilometersEstimator:
     def __init__(self, data, no_frames, video_length):
         self.data = data
@@ -13,6 +13,7 @@ class TeamKilometersEstimator:
         cx1, cy1 = (x1 + x2) / 2, (y1 + y2) / 2
 
         return cx1, cy1
+   
     def _modify_team_data(self, team):
         modified_players = []
         for player in team:
@@ -45,12 +46,9 @@ class TeamKilometersEstimator:
         full_index = range(df.index.min(), df.index.max() + 1)
         df = df.reindex(full_index)
 
-
         df_interp = df[['center_x', 'center_y']].interpolate(method='linear')
 
         df_interp.reset_index(inplace=True)
-
-        # df_interp.rename(columns={'index': 'frame'}, inplace=True)
 
         return df_interp
 

@@ -7,9 +7,7 @@ import supervision as sv
 class BallController:
     def __init__(self, buffer_size: int = 10):
         self.buffer = deque(maxlen=buffer_size)
-        self.bbox_buffer = deque(maxlen=buffer_size)
-        self.last_velocity = np.array([0, 0, 0, 0])
-        self.distance_limit = 100.0
+      
 
     def _get_centers(self, bboxes):
         centers = []
@@ -30,19 +28,10 @@ class BallController:
             distances = np.linalg.norm(centers - centroid, axis=1)
             index = np.argmin(distances)
 
-            if len(self.bbox_buffer) > 0:
-                last_bbox = np.array(self.bbox_buffer[-1])
-                current_bbox = np.array(bboxes[index])
+            is_a_player = self._check_missrecognition(bboxes[index], players_data, frame)
+            if is_a_player is True:
+                return None
 
-                if not np.array_equal(last_bbox, current_bbox):
-                    self.last_velocity = current_bbox - last_bbox
-
-                is_a_player = self._check_missrecognition(bboxes[index], players_data, frame)
-                if is_a_player is True:
-                    return None
-
-            self.bbox_buffer.append(bboxes[index])
-            # punerea limitei ??
             return bboxes[index]
 
         return None
@@ -90,13 +79,3 @@ class BallController:
 
             valid_bboxes.append(valid_bbox)
         return valid_bboxes
-
-    def _predict_position(self):
-        if len(self.buffer) == 0:
-            return None
-
-        last_bbox = self.bbox_buffer[-1]  # Get last known bounding box
-        predicted_bbox = last_bbox + self.last_velocity
-        self.bbox_buffer.append(predicted_bbox)
-
-        return predicted_bbox.tolist()

@@ -13,13 +13,8 @@ class BallPossesion:
         self.threshold = 55
         self.min_distance = 99999
 
-    def _get_goalkeeper(self):
-        goalkeeper_list = self.tracked_data['goalkeeper']
-        goalkeeper = goalkeeper_list[0]
-
     def set_possesions(self):
         players_modified_data_with_ball_assignment = []
-        # frames_ball_in_air = frames_where_ball_in_air(self.ball_data)
         print('Setting possesions...')
         print('len ball data: ', len(self.ball_data))
         for i, ball_bbox in enumerate(self.ball_data):
@@ -33,7 +28,6 @@ class BallPossesion:
                     player['has_ball'] = self.has_ball if (assigned_ball
                                                            and self._is_ball_at_player_legs(ball_bbox, player['bbox'])) \
                         else self.do_not_have_ball
-                    # player['has_ball'] = self.has_ball if assigned_ball else self.do_not_have_ball
                 else:
                     player['has_ball'] = self.do_not_have_ball
 
@@ -51,7 +45,6 @@ class BallPossesion:
         x_pmin, y_pmin, x_pmax, y_pmax = bbox_player
         x_bmin, y_bmin, x_bmax, y_bmax = bbox_ball
 
-        # belly-to-legs region
         y_belly = y_pmin + belly_ratio * (y_pmax - y_pmin)
 
         y_overlap = (y_bmax > y_belly) and (y_bmin > y_belly) and (y_bmin < y_pmax)
@@ -70,8 +63,6 @@ class BallPossesion:
 
     def _ball_assignment_(self, bbox_player: list, bbox_ball: list):
         ball_center_x, ball_center_y = self._get_bbox_center(bbox_ball)
-
-        assigned_player = -2
 
         left_distance = self.distance_between_points(bbox_player[0], bbox_player[-1], ball_center_x, ball_center_y)
         right_distance = self.distance_between_points(bbox_player[2], bbox_player[-1], ball_center_x, ball_center_y)

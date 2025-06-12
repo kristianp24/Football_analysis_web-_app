@@ -3,13 +3,15 @@ from models.user import User
 from flask import Blueprint
 from .create_engine_sessions import create_engine_and_sessions
 import datetime
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 import pytz
 import bcrypt
 auth_bp = Blueprint('auth', __name__)
+
+jwt = JWTManager()  
 
 @auth_bp.route('/register', methods=['POST'])
 def add_user():
@@ -47,11 +49,12 @@ def fetch_user():
         if user and bcrypt.checkpw(data['password'].encode('utf-8'),  user.hashed_password.encode('utf-8')):        
             timezone = pytz.timezone('Europe/Bucharest')
             now_utc = datetime.datetime.now(timezone)
-            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=50))
+            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=75))
+            refresh_token = create_refresh_token(identity=user.email)
             user.token = access_token
             user.token_expiration = now_utc + datetime.timedelta(minutes=50)
             session.commit()
-            return jsonify({"token": access_token}), 200
+            return jsonify({"token": access_token, "refresh_token": refresh_token}), 200
         else:
             return jsonify({"error": "Invalid password"}), 401
 
@@ -82,6 +85,18 @@ def logout():
 @jwt_required()
 def videoDownload():
     return jsonify({"message": "Token still valid"}), 200
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify(msg="Token has expired"), 401
+
+@auth_bp.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()  
+    new_access_token = create_access_token(identity=identity)
+    session = create_engine_and_sessions()
+    user = session.query(User).filter_by(email=identity).first()
+    user.token = new_access_token
+    return jsonify(access_token=new_access_token), 200
        
-
-

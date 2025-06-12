@@ -8,11 +8,18 @@ class BallStatistics:
     def __init__(self, players_data):
         self.players = players_data
 
-    def _get_players_with_ball_possesion(self):
-        return [player for player in self.players if player['has_ball']]
+    def _get_players_with_ball_possession(self):
+        seen_ids = set()
+        unique_players = []
+        for player in self.players:
+            if player['has_ball'] and player['tracker_id'] not in seen_ids:
+                unique_players.append(player)
+                seen_ids.add(player['tracker_id'])
+        return unique_players
+
     def _get_labels_(self):
-        players_with_possesion = self._get_players_with_ball_possesion()
-        labels = [player['team'] for player in players_with_possesion]
+        players_with_possession = self._get_players_with_ball_possession()
+        labels = [player['team'] for player in players_with_possession]
         return labels
 
     def calculate_statistics_possesion(self):

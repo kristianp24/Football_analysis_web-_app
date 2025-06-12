@@ -5,12 +5,12 @@ import backgroundImage from "../media/fundal.png";
 import Button from "@mui/material/Button";
 import AlertComponent from "../components/Alert";
 import useAlertSetter from "../hooks/useAlertSetter";
-import axios from "axios";
 import saveVideo from "../requests/saveVideoRequest";
 import predictVideo from "../requests/predictVideoRequest";
 import FormDialog from "../components/TeamColoursDialog";
 import FullScreenDialog from "../components/StatisticsDialog";
-import CircularWithValueLabel from "../components/CircularProgress";
+import check_and_refresh_token from "../util_functions/token_expiration_checker";
+import { useNavigate } from "react-router-dom";
 
 const VideoDownloaderPage = () => {
      const [url, setUrl] = useState("");
@@ -22,40 +22,24 @@ const VideoDownloaderPage = () => {
      const [openTeamForm, setOpenTeamForm] = useState(false)
      const [hiddenStatisticsButton, setHidden] = useState(true);
      const [disableButton, setDisableButton] = useState(false);
+     const navigate = useNavigate();
      
 
-    //  useEffect(() => {
-    //     const checkAndRedirect = async  () => {    
-    //         const isExpired = await check_token_expiration();
-    //         if (isExpired){
-    //             localStorage.removeItem('token');
-    //             try{
-    //                 const response = await axios.post(
-    //                 'http://127.0.0.1:5000/auth/logout', 
-    //                 {},  
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${tokenRef.current}` 
-    //                     }
-    //                 }
-    //                );
-    //                navigate('/');
-    //             }
-    //             catch (error) {
-    //                 console.log(error);
-    //             }
-                
-                
-    //         }
-    //     }
+     useEffect(() => {
+        const checkAndRedirect = async () => {
+            const shouldRedirect = await check_and_refresh_token();
+            if (shouldRedirect) {
+            localStorage.clear();
+            navigate('/');
+            }
+           
+        };
 
-    //     checkAndRedirect();
+        checkAndRedirect();
+        const intervalId = setInterval(checkAndRedirect, 120000);
+        return () => clearInterval(intervalId);
+        }, [navigate]);
 
-    //    const intervalId = setInterval(checkAndRedirect, 120000);
-    //    return () => clearInterval(intervalId);
-        
-    //  }
-    //     ,[navigate]);
     
     
     const closeDialog = () => {
@@ -226,7 +210,7 @@ const VideoDownloaderPage = () => {
            {!hiddenStatisticsButton && (
                 <Button
                     onClick={handleStatistics}
-                    
+                    disabled={disableButton}
                     variant="contained"
                     title="View statistics"
                     color="secondary"

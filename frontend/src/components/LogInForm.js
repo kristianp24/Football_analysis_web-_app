@@ -33,7 +33,10 @@ const LogInForm = () => {
 
     if (response.status === 200 && response.data.token) {
       const token = response.data.token;
+      const refreshToken = response.data.refresh_token;
       localStorage.setItem("token", token);
+      localStorage.setItem("refresh_token", refreshToken);
+      console.log("Login successful, refresh token:", refreshToken);
       showAlert('success', 'Login successful!');
       navigate('/VideoDownload', {replace : true});
     } else if (response.status === 401 || response.status === 409 || response.status === 500) {

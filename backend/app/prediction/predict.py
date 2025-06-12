@@ -66,6 +66,7 @@ def predict(VIDEO_PATH, videoName: str):
     print('Tracking objects')
     tracked_data = tracker.track_objects(video_frames, video_name=videoName)
     tracked_data ['video_name'] = videoName
+    tracked_data = tracker.get_player_colours(tracked_data, video_frames)
 
     ball_controller = BallController()
     valid_bboxes_ball = ball_controller.get_valid_ball_bboxes(len(video_frames), tracked_data)
@@ -73,9 +74,6 @@ def predict(VIDEO_PATH, videoName: str):
     
     ball_possesion = BallPossesion(tracked_data, valid_bboxes_ball)
     tracked_data = ball_possesion.set_possesions()
-
-    print('Drawing annotations')    
-    drawed_frames, tracked_data = tracker.draw_annotations(video_frames, tracked_data, valid_bboxes_ball)
 
     team_separator = TeamSeparator(tracked_data)
     new_data, centers = team_separator.separate_teams()
