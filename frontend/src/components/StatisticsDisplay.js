@@ -8,7 +8,7 @@ const StatisticsDisplay = ({team_name, passes, possesion, possesion_percentage, 
              <Typography variant="h6">Possesion ball count: {possesion}</Typography>
              <Typography variant="h6"> Number of passes: {passes}</Typography>
              <Typography variant="h6"> Estimated km runned: {km_runned} km</Typography>
-             <Typography variant="h6"> Estimated Average speed of player: {avg_speed_player} m/s</Typography>
+             <Typography variant="h6"> Estimated Average speed of player: {avg_speed_player} km/h </Typography>
         </div>
        
     );

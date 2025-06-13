@@ -5,7 +5,9 @@ from sports.configs.soccer import SoccerPitchConfiguration
 import json
 from ultralytics import YOLO
 import os
+import pickle
 from dotenv import load_dotenv
+from collections import defaultdict
 load_dotenv()
 
 class ReferencePointsTracker:
@@ -16,6 +18,7 @@ class ReferencePointsTracker:
         self.tracked_data = tracked_data
         self.pitch_config = SoccerPitchConfiguration()
         self.team_cluster = [0, 1]
+        self.dict_km_runner_points = defaultdict(lambda: defaultdict(list))
         self.projected_points_file = os.getenv("PROJECTED_POINTS_PATH")
     
     def _get_bottom_center(self, bbox):
@@ -33,9 +36,32 @@ class ReferencePointsTracker:
         frame_reference_points = key_points.xy[0][mask]
 
         return pitch_reference_points, frame_reference_points
+    
+    def _set_km_runner_points(self, view_transformer, players):
+        for player in players:
+            team = "team_" + str(player['team'])
+            self.dict_km_runner_points[team][player['tracker_id']].append(
+                view_transformer.transform_points(
+                    np.array(self._get_bottom_center(player['bbox']))).tolist()[0]
+            )
 
-    def track(self):
-       
+    def _save_km_runner_points(self):
+        clean_dict = {
+            team: dict(players)
+            for team, players in self.dict_km_runner_points.items()
+        }
+        print(clean_dict['team_0'])
+        with open(os.getenv("KM_RUNNER_POINTS_PATH"), 'wb') as f:
+            pickle.dump(clean_dict, f)
+        print('KM runner points saved to:', os.getenv("KM_RUNNER_POINTS_PATH"))
+    
+    def _save_all_projected_points(self, dict_projected_points):
+        with open(self.projected_points_file, 'w') as f:
+            json.dump(dict_projected_points, f, indent=2)
+        print('Projected points saved ')
+
+    def project_points(self):
+
         dict_projected_points = {
             'team_0': [],
             'team_1': []
@@ -51,6 +77,7 @@ class ReferencePointsTracker:
                 try:
                     pitch_ref, frame_ref = self._detect_reference_points(frame)
                     view_transformer = ViewTransformer(source=frame_ref, target=pitch_ref)
+
                 except Exception as e:
                     print(f"Eroare detectare puncte la frame {idx}: {e}")
                     continue
@@ -61,10 +88,10 @@ class ReferencePointsTracker:
                     continue
 
                 projected = view_transformer.transform_points(np.array(frame_players_xy))
+                self._set_km_runner_points(view_transformer, players)
                 all_projected_points.extend(projected.tolist())
             dict_projected_points[f'team_{cluster}'] = all_projected_points
         
-        with open(self.projected_points_file, 'w') as f:
-            json.dump(dict_projected_points, f, indent=2)
-        
-        print('Projected points saved to:', self.projected_points_file)
+        self._save_all_projected_points(dict_projected_points)
+        self._save_km_runner_points()
+    

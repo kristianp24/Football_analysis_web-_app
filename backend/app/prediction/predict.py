@@ -79,7 +79,7 @@ def predict(VIDEO_PATH, videoName: str):
     new_data, centers = team_separator.separate_teams()
 
     track_pitch_keypoints = ReferencePointsTracker(video_frames, tracked_data)
-    track_pitch_keypoints.track()
+    track_pitch_keypoints.project_points()
 
     ball_statistics = BallStatistics(tracked_data['player'])
     percentage_1, percentage_2, count_1, count_2 = ball_statistics.calculate_statistics_possesion()
@@ -87,7 +87,7 @@ def predict(VIDEO_PATH, videoName: str):
     pass_counter = PassCounter(len(video_frames), new_data)
     team_0_passes, team_1_passes = pass_counter.get_number_of_passes()
 
-    team_kilometers_estimator = TeamKilometersEstimator(tracked_data, duration, no_frames)
+    team_kilometers_estimator = TeamKilometersEstimator(duration, no_frames)
     distance_meters_team_0, distance_km_team_0 = team_kilometers_estimator.find_kilometers_runned(0)
     avg_speed_per_player_team_0= estimate_avg_speed_per_player(distance_meters_team_0, duration)
 

@@ -70,6 +70,10 @@ const VideoDownloaderPage = () => {
      const handleSaveVideo = async () => {
         const formData = new FormData();
         formData.append("video", selectedFile);
+        if (!selectedFile) {
+            showAlert('error', 'Please select a video file to upload!');
+            return;
+        }
         setDisableButton(true);
         // console.log(selectedFile);
         try {
