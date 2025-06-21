@@ -11,8 +11,10 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 ![MariaDB](https://img.shields.io/badge/MariaDB-10.x-lightblue?logo=mariadb&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)
+![Material UI](https://img.shields.io/badge/Material--UI-5.x-0081CB?logo=mui&logoColor=white)
 
-> An web app based on Computer Vision for extracting statistics based on football matches video input 📊
+
+> An web app based on Computer Vision for extracting statistics out of football matches video input 📊
 
 ---
 
