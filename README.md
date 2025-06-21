@@ -5,6 +5,7 @@
 ![Supervision](https://img.shields.io/badge/Supervision-ultralytics-yellow?logo=github&logoColor=black)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?logo=opencv&logoColor=white)
 ![pandas](https://img.shields.io/badge/pandas-2.x-purple?logo=pandas&logoColor=white)
+![Seaborn](https://img.shields.io/badge/Seaborn-0.13+-lightblue?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-2.x-black?logo=flask&logoColor=white)
 ![numpy](https://img.shields.io/badge/numpy-1.x-blue?logo=numpy&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
