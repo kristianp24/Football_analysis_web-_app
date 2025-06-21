@@ -27,23 +27,23 @@
   └── VideoDownload  
 
 [🗂️ **backend**](./backend) – Implemented in Python using Flask for route creation and database management.  
-├── [🗂️ **routes**](./backend/routes) – Contains all Flask routes for client-server communication.  
-├── [🗂️ **prediction**](./backend/prediction) – Responsible for:  
+├── [🗂️ **routes**](./backend/app/routes) – Contains all Flask routes for client-server communication.  
+├── [🗂️ **prediction**](./backend/app/prediction) – Responsible for:  
   ├── Detection and tracking of objects (players, keepers, ball, referees) in the video.  
   └── Estimating statistics from the uploaded video.  
-└── [🗂️ **models**](./backend/models) – Class models for representing and interacting with the database.
+└── [🗂️ **models**](./backend/app/models) – Class models for representing and interacting with the database.
 
 
 
 ---
 
-💻 Models used for prediction (Click on them to see)
+# 💻 Models used for prediction (Click on them to see)
 
 [![Players and Ball Detection](https://img.shields.io/badge/Roboflow-Player%20Detection-blue?logo=roboflow&logoColor=white)](https://universe.roboflow.com/kristianp/football-players-detection-3zvbc-84vij/model/9)
 
 [![Keypoints Pitch Detection](https://img.shields.io/badge/Roboflow-Keypoints%20Pitch%20Detection-orange?logo=roboflow&logoColor=white)](https://universe.roboflow.com/kristianp/football-field-detection-f07vi-g30ga/model/1)
 
-💾 Some of the labeled data of players and the labeled data for pitch keypoints are taken from the open-source project of Roboflow
+**💾 Some of the labeled data of players and the labeled data for pitch keypoints are taken from the open-source project of Roboflow**
 
 [![Players Dataset](https://img.shields.io/badge/Roboflow-Players%20Dataset-blue?logo=roboflow&logoColor=white)](https://universe.roboflow.com/roboflow-jvuqo/football-players-detection-3zvbc)
 
@@ -51,7 +51,7 @@
 
 ---
 
-**📷 App captures**
+# 📷 App captures
 
 **🔐Login**
 ![Login Page](./frontend/app_captures/login.PNG)
