@@ -154,14 +154,6 @@ const LogInForm = () => {
                 disabled={disableButton}
                 component="button"
                 variant="body2"
-                onClick={() => console.info("Reset password clicked")}
-              >
-                Forgot password?
-              </Link>
-              <Link
-                disabled={disableButton}
-                component="button"
-                variant="body2"
                 onClick={() => navigate('/Register')}
               >
                 Sign up

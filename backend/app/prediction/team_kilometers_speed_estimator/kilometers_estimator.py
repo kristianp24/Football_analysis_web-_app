@@ -43,9 +43,9 @@ class TeamKilometersEstimator:
 
             dict_distances[player_id] = sum(distances)
 
-        sum_meters = round(sum(dict_distances.values()))
-        sum_kilometers = round(sum_meters / 100000, 3)
-        sum_meters = round(sum_meters / 100, 3)
+        sum_cm = round(sum(dict_distances.values()))
+        sum_kilometers = round(sum_cm / 100000, 3)
+        sum_meters = round(sum_cm / 100, 3)
 
         return sum_meters, sum_kilometers
 

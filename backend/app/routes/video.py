@@ -6,7 +6,7 @@ from .email_sender import send_prediction_ready_email
 
 video_bp = Blueprint('video_bp', __name__)
 
-ALLOWED_EXTENSIONS = {'mp4', 'avi', 'flv', 'mov'}
+ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov'}
 
 video_name = ''
 def allowed_file(filename):
@@ -25,12 +25,10 @@ def add_video():
         video_name = file.filename
         return jsonify({"message":"Video added with success!!"}), 200
 
-@video_bp.route('/predictVideo', methods=['GET'])
+@video_bp.route('/predictVideo', methods=['GET', 'POST'])
 @jwt_required()
 def get_video():
     user_email = get_jwt_identity()  
-    print('User email:', user_email)
-    video = os.listdir(VIDEO_PATH)
     from prediction import predict
     print('Starting prediction')
     is_predicted, data = predict(VIDEO_PATH, video_name)

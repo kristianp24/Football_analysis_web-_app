@@ -49,7 +49,7 @@ def fetch_user():
         if user and bcrypt.checkpw(data['password'].encode('utf-8'),  user.hashed_password.encode('utf-8')):        
             timezone = pytz.timezone('Europe/Bucharest')
             now_utc = datetime.datetime.now(timezone)
-            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=75))
+            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=2))
             refresh_token = create_refresh_token(identity=user.email)
             user.token = access_token
             user.token_expiration = now_utc + datetime.timedelta(minutes=50)

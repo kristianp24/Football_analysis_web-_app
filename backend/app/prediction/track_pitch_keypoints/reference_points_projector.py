@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from collections import defaultdict
 load_dotenv()
 
-class ReferencePointsTracker:
+class ReferencePointsProjector:
     def __init__(self, frames, tracked_data):
         self.model = YOLO(os.getenv("MODEL"))
         self.frames = frames
@@ -56,12 +56,11 @@ class ReferencePointsTracker:
         print('KM runner points saved to:', os.getenv("KM_RUNNER_POINTS_PATH"))
     
     def _save_all_projected_points(self, dict_projected_points):
-        with open(self.projected_points_file, 'w') as f:
-            json.dump(dict_projected_points, f, indent=2)
+        with open(self.projected_points_file, 'wb') as f:
+            pickle.dump(dict_projected_points, f)
         print('Projected points saved ')
 
     def project_points(self):
-
         dict_projected_points = {
             'team_0': [],
             'team_1': []
@@ -70,7 +69,7 @@ class ReferencePointsTracker:
         
         for cluster in self.team_cluster:
             all_projected_points = []
-            for idx in range(0, self.frame_count, 10):
+            for idx in range(0, self.frame_count):
                
                 frame = self.frames[idx]
                 print('A intrat in bucla')

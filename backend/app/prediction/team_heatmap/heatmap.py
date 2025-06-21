@@ -9,6 +9,7 @@ import numpy as np
 import io
 import os
 from dotenv import load_dotenv
+import pickle
 
 load_dotenv()
 
@@ -16,7 +17,6 @@ class Heatmap:
      def __init__(self, team_cluster):
         self.team_cluster = team_cluster
         self.file_name = os.getenv("TRACKED_FILE")
-        self.model = YOLO(os.getenv("KEYPOINTS_MODEL"))
         self.pitch_config = SoccerPitchConfiguration()
         self.projected_points_file = os.getenv("PROJECTED_POINTS_PATH") 
 
@@ -28,12 +28,10 @@ class Heatmap:
 
       
      def _read_data(self):
-            with open(self.projected_points_file, "r") as f:
-                projected_data = json.load(f) 
+            with open(self.projected_points_file, "rb") as f:
+                projected_data = pickle.load(f)
             return projected_data
 
-
-     
      def create_heatmap(self): 
       scale = 0.1
       padding = 50
