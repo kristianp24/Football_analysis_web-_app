@@ -7,7 +7,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
-import pytz
+import traceback
 import bcrypt
 auth_bp = Blueprint('auth', __name__)
 
@@ -47,20 +47,17 @@ def fetch_user():
             return jsonify({"error": "User already logged in"}), 409
        
         if user and bcrypt.checkpw(data['password'].encode('utf-8'),  user.hashed_password.encode('utf-8')):        
-            timezone = pytz.timezone('Europe/Bucharest')
-            now_utc = datetime.datetime.now(timezone)
-            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=2))
+            access_token = create_access_token(identity=user.email, expires_delta=datetime.timedelta(minutes=120))
             refresh_token = create_refresh_token(identity=user.email)
             user.token = access_token
-            user.token_expiration = now_utc + datetime.timedelta(minutes=50)
             session.commit()
             return jsonify({"token": access_token, "refresh_token": refresh_token}), 200
         else:
             return jsonify({"error": "Invalid password"}), 401
 
     except Exception as e:
-        
-        return jsonify({"error": str(e)}), 501
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500 
     finally:
         session.close()
 

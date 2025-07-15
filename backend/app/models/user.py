@@ -9,11 +9,9 @@ class User(Base):
     email = Column(String(100), nullable=False, unique=True)
     hashed_password = Column(String(200), nullable=False)
     token = Column(String(600))  
-    token_expiration = Column(DateTime)  
-    created_at = Column(DateTime, default=datetime.datetime.now)  # Automatically set creation time
+    created_at = Column(DateTime, default=datetime.datetime.now) 
     updated_at = Column(DateTime, onupdate=datetime.datetime.now) 
-    videos = relationship('Video', back_populates='user', cascade="all, delete", passive_deletes=True)
-
+    
     def to_dict(self):
         return {
             "id": self.id,
@@ -21,5 +19,5 @@ class User(Base):
             "email": self.email
         }
     
-from .videos import Video
+
 

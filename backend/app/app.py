@@ -27,7 +27,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 with app.app_context():
-    engine = create_or_check_database(app, migrate)
+    engine = create_or_check_database(app)
 
 
 if __name__ == '__main__':

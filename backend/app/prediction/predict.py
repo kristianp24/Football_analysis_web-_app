@@ -14,6 +14,7 @@ from .track_pitch_keypoints import ReferencePointsProjector
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from dotenv import load_dotenv
 import os
+import threading
 load_dotenv()
 
 
@@ -41,7 +42,9 @@ def predict(VIDEO_PATH, videoName: str):
     new_data, centers = team_separator.separate_teams()
 
     track_pitch_keypoints = ReferencePointsProjector(video_frames, tracked_data)
-    track_pitch_keypoints.project_points()
+    thread = threading.Thread(target=track_pitch_keypoints.project_points)
+    thread.start()
+    thread.join()
 
     ball_statistics = BallStatistics(tracked_data['player'])
     percentage_1, percentage_2, count_1, count_2 = ball_statistics.calculate_statistics_possesion()
